@@ -43,6 +43,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
+import com.admob.android.ads.AdManager;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
@@ -85,6 +86,8 @@ public class ChannelListActivity extends ListActivity {
         ListAdapter adapter = new ChannelListAdapter(this, mCursor);
         setListAdapter(adapter);
         registerForContextMenu(getListView());
+        // TODO Only Enable This to test AdMob.  Re-comment before release.
+        //AdManager.setTestDevices(new String[] {AdManager.TEST_EMULATOR});
     }
 	
 	@Override
