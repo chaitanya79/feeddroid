@@ -16,6 +16,7 @@
  -->
  <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
+  	xmlns:feeddroid="http://schemas.android.com/apk/res/com.determinato.feeddroid"
 	  android:orientation="vertical"
 	  android:layout_width="fill_parent"
 	  android:layout_height="fill_parent">
@@ -33,4 +34,12 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:text="@string/no_posts"/>
+		
+	<com.admob.android.ads.AdView
+		android:id="@+id/post_list_ad"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		feeddroid:backgroundColor="#000000"
+		feeddroid:primaryTextColor="#FFFFFF"
+		feeddroid:secondaryTextColor="#CCCCCC"/>
 </LinearLayout>
