@@ -285,6 +285,7 @@ public class ChannelListActivity extends ListActivity {
 			
 			try {
 				new RssParser(getContentResolver()).syncDb(mHandler, mChannelId, mUrl);
+				
 			} catch (Exception e) {
 				Log.e(TAG, Log.getStackTraceString(e));
 				
