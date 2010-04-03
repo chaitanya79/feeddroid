@@ -23,7 +23,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
-import android.content.Intent;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,7 +40,7 @@ public class ChannelAddActivity extends Activity {
 	private static final String TAG = "ChannelAdd";
 	
 	private EditText mUrl;
-	
+	private Context mContext = this;
 	protected ProgressDialog mBusy;
 	final Handler mHandler = new Handler();
 	
@@ -108,7 +108,7 @@ public class ChannelAddActivity extends Activity {
 						}
 					});
 				} catch (Exception e) {
-					Log.d(TAG, "BOOM!!!!!!");
+					
 					final String errMsg = e.getMessage();
 					final String fullErrMsg = e.toString();
 					mHandler.post(new Runnable() {
@@ -116,9 +116,9 @@ public class ChannelAddActivity extends Activity {
 							mBusy.dismiss();
 							String errstr = ((fullErrMsg != null) ? fullErrMsg : errMsg);
 							
-							AlertDialog.Builder builder = new AlertDialog.Builder(getParent());
+							AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 							builder.setTitle("Feed error");
-							builder.setMessage("An error was encountered while accessing the feed: " + errstr);
+							builder.setMessage("An error was encountered while accessing the feed");
 							
 							builder.setCancelable(true);
 							builder.create().show();

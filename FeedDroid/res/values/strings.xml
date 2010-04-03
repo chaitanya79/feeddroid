@@ -30,4 +30,8 @@
     <string name="view_post">View Post</string>
     <string name="view_posts">View Posts</string>
     <string name="btn_save">Save</string>
+    <string name="confirm_remove_channel">Are you sure you want to remove this channel?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="updates_available">RSS Feeds have been updated.</string>
 </resources>

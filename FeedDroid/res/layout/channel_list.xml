@@ -14,25 +14,27 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  -->
- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ 
+ <LinearLayout
+ 	xmlns:android="http://schemas.android.com/apk/res/android"
  	xmlns:feeddroid="http://schemas.android.com/apk/res/com.determinato.feeddroid"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:paddingTop="2px">
-
+	
 	<ListView android:id="@android:id/list"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:layout_weight="1"/>
-		
+			
 	<TextView android:id="@android:id/empty"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:text="No feed subscriptions.  Press [Menu] to start."
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:padding="24dip"/>	
-	
+		
 	<com.admob.android.ads.AdView
 		android:id="@+id/channel_list_ad"
 		android:layout_width="fill_parent"
@@ -40,4 +42,5 @@
 		feeddroid:backgroundColor="#000000"
 		feeddroid:primaryTextColor="#FFFFFF"
 		feeddroid:secondaryTextColor="#CCCCCC"/>
+			
 </LinearLayout>

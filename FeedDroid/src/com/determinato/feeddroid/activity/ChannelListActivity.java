@@ -43,7 +43,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import com.admob.android.ads.AdManager;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
@@ -69,11 +68,13 @@ public class ChannelListActivity extends ListActivity {
 		FeedDroid.Channels.TITLE, FeedDroid.Channels.URL
 	};
 	
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_list);
         
+
         Intent intent = getIntent();
         if (intent.getData() == null)
         	intent.setData(FeedDroid.Channels.CONTENT_URI);
@@ -86,8 +87,7 @@ public class ChannelListActivity extends ListActivity {
         ListAdapter adapter = new ChannelListAdapter(this, mCursor);
         setListAdapter(adapter);
         registerForContextMenu(getListView());
-        // TODO Only Enable This to test AdMob.  Re-comment before release.
-        //AdManager.setTestDevices(new String[] {AdManager.TEST_EMULATOR});
+        
     }
 	
 	@Override
@@ -183,23 +183,24 @@ public class ChannelListActivity extends ListActivity {
 	}
 	
 	private final void refreshChannel() {
+		Handler mRefreshHandler = new Handler();
 		if (mDownloadManager == null) {
-			Handler mRefreshHandler = new Handler();
 			mDownloadManager = new DownloadManager(mRefreshHandler);
+		}	
+		
+		long channelId =
+			mCursor.getInt(mCursor.getColumnIndex(FeedDroid.Channels._ID));
 			
-			long channelId =
-				mCursor.getInt(mCursor.getColumnIndex(FeedDroid.Channels._ID));
+		String url = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Channels.URL));
 			
-			String url = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Channels.URL));
+		ChannelListRow row =
+			((ChannelListAdapter) getListAdapter()).getViewByRowId(channelId);
 			
-			ChannelListRow row =
-				((ChannelListAdapter) getListAdapter()).getViewByRowId(channelId);
-			
-			if (row != null) {
-				Runnable refresh = new RefreshRunnable(mRefreshHandler, row, channelId, url);
-				mDownloadManager.schedule(refresh);
-			}
+		if (row != null) {
+			Runnable refresh = new RefreshRunnable(mRefreshHandler, row, channelId, url);
+			mDownloadManager.schedule(refresh);
 		}
+		
 	}
 	
 	private void removeChannel(final long channelId) {
