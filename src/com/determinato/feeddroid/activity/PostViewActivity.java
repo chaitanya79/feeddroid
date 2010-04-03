@@ -19,23 +19,31 @@ package com.determinato.feeddroid.activity;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.gesture.GestureLibraries;
+import android.gesture.GestureLibrary;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
+import com.determinato.feeddroid.util.GestureFilter;
 import com.determinato.feeddroid.util.KeyUtils;
+import com.determinato.feeddroid.util.GestureFilter.SimpleGestureListener;
 import com.determinato.feeddroid.view.ChannelHeader;
 
-public class PostViewActivity extends Activity {
+public class PostViewActivity extends Activity implements SimpleGestureListener {
 	private static final String TAG = "PostView";
 	
 	private static final int NEXT_POST_ID = Menu.FIRST;
@@ -53,6 +61,9 @@ public class PostViewActivity extends Activity {
 	
 	private long mPrevPostId = -1;
 	private long mNextPostId = -1;
+	private GestureLibrary mLibrary;
+	private GestureFilter mDetector;
+	private Context mContext = this;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +79,16 @@ public class PostViewActivity extends Activity {
 		
 		mChannelId = mCursor.getLong(mCursor.getColumnIndex(FeedDroid.Posts.CHANNEL_ID));
 		mPostId = Long.parseLong(uri.getPathSegments().get(1));
-		
+		mDetector = new GestureFilter(this, this);
+		mDetector.setEnabled(true);
+		mDetector.setMode(GestureFilter.MODE_DYNAMIC);
+		mLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
+		if (!mLibrary.load()) {
+			Log.e(TAG, "Unable to load gestures library.  Application cannot continue");
+			finish();
+		}
+
+
 		initWithData();
 	}
 	
@@ -80,11 +100,15 @@ public class PostViewActivity extends Activity {
 			return;
 		
 		ContentResolver resolver = getContentResolver();
+		ContentValues values = new ContentValues();
+		values.put("read", 1);
 		
-		//resolver.update(FeedDroid.Posts.CONTENT_URI, null, FeedDroid.Posts.READ + "=1", null);
+		resolver.update(FeedDroid.Posts.CONTENT_URI, values, 
+				"_id=?", new String[] {Long.toString(mPostId)});
 	}
 	
 	public void initWithData() {
+		Log.d(TAG, "body: " + getBody());
 		ContentResolver resolver = getContentResolver();
 		
 		Cursor cChannel = resolver.query(ContentUris.withAppendedId(FeedDroid.Channels.CONTENT_URI, mChannelId),
@@ -232,6 +256,24 @@ public class PostViewActivity extends Activity {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void onDoubleTap() {
+		// do nothing
+		
+	}
+
+	@Override
+	public void onSwipe(int direction) {
+		switch(direction) {
+		case GestureFilter.SWIPE_RIGHT:
+			Toast.makeText(this, "Swipe Right", Toast.LENGTH_SHORT).show();
+			break;
+		case GestureFilter.SWIPE_LEFT:
+			Toast.makeText(this, "Swipe Left", Toast.LENGTH_SHORT).show();
+			break;
+		}
 	}
 	
 }
