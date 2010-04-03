@@ -242,8 +242,6 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if ((keyCode != KeyEvent.KEYCODE_DPAD_LEFT) &&
-				(keyCode != KeyEvent.KEYCODE_DPAD_RIGHT)) {
 			switch(KeyUtils.intrepretDirection(keyCode)) {
 			case KeyEvent.KEYCODE_DPAD_LEFT:
 				getSiblings();
@@ -251,13 +249,19 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 			case KeyEvent.KEYCODE_DPAD_RIGHT:
 				getSiblings();
 				return prevPost();
-			case KeyEvent.KEYCODE_BACK:
-				finish();
-			}
-		}
+			}		
 		return false;
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch(KeyUtils.intrepretDirection(keyCode)) {
+		case KeyEvent.KEYCODE_BACK:
+			finish();
+		}
+		return false;
+	}
+	
 	@Override
 	public void onDoubleTap() {
 		// do nothing
