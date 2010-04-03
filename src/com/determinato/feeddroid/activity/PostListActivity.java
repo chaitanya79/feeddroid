@@ -65,7 +65,7 @@ public class PostListActivity extends ListActivity {
 		setContentView(R.layout.post_list);
 		
 		Uri uri = getIntent().getData();
-		mCursor = managedQuery(uri, PROJECTION, null, null, null);
+		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on desc");
 		startManagingCursor(mCursor);
 		mId = Long.parseLong(uri.getPathSegments().get(1));
 		
@@ -211,10 +211,18 @@ public class PostListActivity extends ListActivity {
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
 			getSiblings();
 			return nextChannel();
+		
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch(KeyUtils.intrepretDirection(keyCode)) {
 		case KeyEvent.KEYCODE_BACK:
 			finish();
 		}
-		
 		return false;
 	}
 	
