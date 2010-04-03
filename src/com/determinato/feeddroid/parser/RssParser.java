@@ -103,14 +103,17 @@ public class RssParser extends DefaultHandler {
 		reader.setContentHandler(this);
 		reader.setErrorHandler(this);
 		
-		Log.d(TAG, mRssUrl);
 		URL url = new URL(mRssUrl);
 		
 		URLConnection c = url.openConnection();
 		// TODO: Is this a known user agent, or do I need to come up with my own?
 		c.setRequestProperty("User-Agent", "Android/m3-rc37a");
-		reader.parse(new InputSource(c.getInputStream()));
 		
+		try {
+			reader.parse(new InputSource(c.getInputStream()));
+		} catch (NullPointerException e) {
+			Log.e(TAG, "Failed to load URL");
+		}
 		
 		return mId;
 	}
@@ -191,7 +194,7 @@ public class RssParser extends DefaultHandler {
 			
 			if (state.intValue() == STATE_IN_ITEM) {
 				if (mId == -1) {
-					Log.d(TAG, "Oops, </item> found before feed title and our parser sucks too much to deal.");
+					Log.d(TAG, "</item> found before feed title.");
 					return;
 				}
 				
@@ -223,6 +226,7 @@ public class RssParser extends DefaultHandler {
 	}
 	
 	public void characters(char[] ch, int start, int length) {
+		// Are we in the Channel or in a Post?
 		if ((mId == -1) && (mState & STATE_IN_TITLE) != 0) {
 			
 			ContentValues values = new ContentValues();
@@ -242,8 +246,13 @@ public class RssParser extends DefaultHandler {
 		if ((mState & STATE_IN_ITEM) == 0)
 			return;
 		
+		if (mState == (STATE_IN_ITEM | STATE_IN_ITEM_TITLE))
+			Log.d(TAG, "mState: " + mState);
 		switch(mState) {
 		case STATE_IN_ITEM | STATE_IN_ITEM_TITLE:
+			// There seems to be a problem here with HTML-encoded content 
+			// in the RSS XML if the description/content field isn't escaped
+			// with a CDATA tag.  
 			mPostBuf.title = new String(ch, start, length);
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_DESC:
