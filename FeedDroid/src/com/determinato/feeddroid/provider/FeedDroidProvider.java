@@ -262,7 +262,6 @@ public class FeedDroidProvider extends ContentProvider {
 		Uri uri;
 		
 		if (URL_MATCHER.match(url) == CHANNELS) {
-			Log.d(TAG, "url matcher found channel");
 			rowId = insertChannels(values);
 			uri = ContentUris.withAppendedId(FeedDroid.Channels.CONTENT_URI, rowId);
 		} else if (URL_MATCHER.match(url) == POSTS) {

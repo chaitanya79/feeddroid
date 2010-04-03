@@ -58,6 +58,8 @@ public class RssParser extends DefaultHandler {
 	private ChannelPost mPostBuf;
 	
 	private int mState;
+	private boolean htmlEscaped;
+	
 	private static final int STATE_IN_ITEM = (1 << 2);
 	private static final int STATE_IN_ITEM_TITLE = (1 << 3);
 	private static final int STATE_IN_ITEM_LINK = (1 << 4);
@@ -82,6 +84,7 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("pubDate", STATE_IN_ITEM_DATE);
 		mStateMap.put("dc:author", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("author", STATE_IN_ITEM_AUTHOR);
+		mStateMap.put("name", STATE_IN_ITEM_AUTHOR);
 	}
 	
 	public RssParser(ContentResolver resolver) {
@@ -161,7 +164,7 @@ public class RssParser extends DefaultHandler {
 		
 		return r;
 	}
-	
+
 	public void startElement(String uri, String name, String qName, Attributes attrs) {
 		
 		if (mId == -1 &&
@@ -170,6 +173,9 @@ public class RssParser extends DefaultHandler {
 			return;
 		}
 		
+		if (name.equals("content") && attrs.getValue("type").equals("html")) {
+			htmlEscaped = true;
+		}
 		Integer state = mStateMap.get(name);
 		
 		if (state != null) {
@@ -198,15 +204,14 @@ public class RssParser extends DefaultHandler {
 					return;
 				}
 				
+				
 				String[] dupProj = new String[] {FeedDroid.Posts._ID};
 				Uri listUri =
 					ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI_LIST, mId);
 				
 				Cursor dup = mResolver.query(listUri, dupProj, "title = ? AND url = ?",
 						new String[] {mPostBuf.title, mPostBuf.link}, null);
-				
-				Log.d(TAG, "Post: " + mPostBuf.title);
-				
+				Log.d(TAG, "title: " + mPostBuf.title);
 				if (dup.getCount() == 0) {
 					ContentValues values = new ContentValues();
 					
@@ -246,17 +251,14 @@ public class RssParser extends DefaultHandler {
 		if ((mState & STATE_IN_ITEM) == 0)
 			return;
 		
-		if (mState == (STATE_IN_ITEM | STATE_IN_ITEM_TITLE))
-			Log.d(TAG, "mState: " + mState);
 		switch(mState) {
 		case STATE_IN_ITEM | STATE_IN_ITEM_TITLE:
-			// There seems to be a problem here with HTML-encoded content 
-			// in the RSS XML if the description/content field isn't escaped
-			// with a CDATA tag.  
 			mPostBuf.title = new String(ch, start, length);
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_DESC:
-			mPostBuf.desc = new String(ch, start, length);
+			StringBuilder builder = new StringBuilder();
+			builder.append(new String(ch, start, length));
+			mPostBuf.desc = builder.toString();
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_LINK:
 			mPostBuf.link = new String(ch, start, length);
