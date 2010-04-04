@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -45,7 +46,7 @@ import com.determinato.feeddroid.R;
 public class FeedDroidProvider extends ContentProvider {
 	private static final String TAG = "FeedDroidProvider";
 	private static final String DB_NAME = "feeddroid.db";
-	private static final int DB_VERSION = 3;
+	private static final int DB_VERSION = 4;
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
 	private static HashMap<String, String> POST_LIST_PROJECTION;
@@ -76,7 +77,8 @@ public class FeedDroidProvider extends ContentProvider {
 		protected void onCreatePosts(SQLiteDatabase db) {
 			String query = "CREATE TABLE posts (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"channel_id INTEGER, title TEXT, url TEXT, " +
-				"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0');";
+				"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0', " +
+				"starred INTEGER(1) DEFAULT '0');";
 			db.execSQL(query);
 			
 			// Create indexes
@@ -332,7 +334,7 @@ public class FeedDroidProvider extends ContentProvider {
 			orderBy = sortOrder;
 		
 		Cursor c = qb.query(mDb, projection, selection, selectionArgs, null, null, orderBy);
-		
+		//Log.d(TAG, DatabaseUtils.dumpCursorToString(c));
 		c.setNotificationUri(getContext().getContentResolver(), uri);
 		return c;
 	}
@@ -396,5 +398,6 @@ public class FeedDroidProvider extends ContentProvider {
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.AUTHOR, "author");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.DATE, "posted_on");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.BODY, "body");
+		POST_LIST_PROJECTION.put(FeedDroid.Posts.STARRED, "starred");
 	}
 }

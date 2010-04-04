@@ -114,7 +114,8 @@ public class ChannelListActivity extends ListActivity {
 		menu.removeGroup(Menu.CATEGORY_ALTERNATIVE);
 		
 		if (haveItems) {
-			menu.add(Menu.CATEGORY_ALTERNATIVE, REFRESH_ALL_ID, Menu.NONE, "Refresh All");
+			menu.add(Menu.CATEGORY_ALTERNATIVE, REFRESH_ALL_ID, Menu.NONE, "Refresh All")
+			.setIcon(R.drawable.redo);
 		
 		}
 		

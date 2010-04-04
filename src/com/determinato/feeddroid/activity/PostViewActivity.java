@@ -20,11 +20,11 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +32,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +55,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Posts._ID, FeedDroid.Posts.CHANNEL_ID,
 		FeedDroid.Posts.TITLE, FeedDroid.Posts.BODY, FeedDroid.Posts.READ,
-		FeedDroid.Posts.URL	};
+		FeedDroid.Posts.URL, FeedDroid.Posts.STARRED	};
 
 	private long mChannelId = -1;
 	private long mPostId = -1;
@@ -63,7 +66,9 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	private long mNextPostId = -1;
 	private GestureLibrary mLibrary;
 	private GestureFilter mDetector;
-	
+	private TextView mTxtStarred;
+	private ContentResolver mResolver;
+	private ImageButton mStarred;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +76,28 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		setContentView(R.layout.post_view);
 		
 		Uri uri = getIntent().getData();
+		mResolver = getContentResolver();
+		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on desc");
 		
-		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on asc");
 		
 		if (mCursor == null || !mCursor.moveToFirst())
 			finish();
+		
+		mTxtStarred = (TextView) findViewById(R.id.txt_starred);
+		mStarred = (ImageButton) findViewById(R.id.star_post);
+		mStarred.setBackgroundColor(Color.TRANSPARENT);
+		mStarred.setOnClickListener(btn_listener);
+		int starred = mCursor.getInt(mCursor.getColumnIndex(FeedDroid.Posts.STARRED));
+		
+		if (starred == 1) {
+			mTxtStarred.setText(R.string.starred);
+			mStarred.setImageResource(android.R.drawable.star_on);
+		} else {
+			mTxtStarred.setText(R.string.star_this);
+			mStarred.setImageResource(android.R.drawable.star_off);
+		}
+		
+		
 		
 		mChannelId = mCursor.getLong(mCursor.getColumnIndex(FeedDroid.Posts.CHANNEL_ID));
 		mPostId = Long.parseLong(uri.getPathSegments().get(1));
@@ -91,6 +113,32 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 
 		initWithData();
 	}
+	
+	
+	OnClickListener btn_listener = new OnClickListener() {
+		public void onClick(View v) {
+			Uri uri = getIntent().getData();
+			Cursor c = mResolver.query(uri, PROJECTION, "_id=" + mPostId, null, null);
+			c.moveToFirst();
+			int starred = c.getInt(c.getColumnIndex(FeedDroid.Posts.STARRED));
+			if (starred == 0)
+				starred = 1;
+			else
+				starred = 0;
+			ContentValues values = new ContentValues();
+			values.put("starred", starred);
+			mResolver.update(uri, values, "_id=" + mPostId, null);
+			
+			if (starred == 0) {
+				mTxtStarred.setText(R.string.star_this);
+				mStarred.setImageResource(android.R.drawable.star_off);
+			} else if (starred == 1){
+				mTxtStarred.setText(R.string.starred);
+				mStarred.setImageResource(android.R.drawable.star_on);
+			}
+			
+		}
+	};
 	
 	@Override
 	public void onStart() {

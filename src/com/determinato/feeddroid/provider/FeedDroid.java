@@ -50,5 +50,6 @@ public class FeedDroid {
 		public static final String URL = "url";
 		public static final String BODY = "body";
 		public static final String DATE = "posted_on";
+		public static final String STARRED = "starred";
 	}
 }
