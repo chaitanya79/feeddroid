@@ -37,6 +37,31 @@
 		android:layout_height="fill_parent"
 		android:text="@string/no_posts"/>
 
+	<LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:paddingRight="6dip"
+			android:text="@string/post_show"/>
+		<RadioGroup
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			<RadioButton android:id="@+id/show_all"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="All"/>	
+			<RadioButton android:id="@+id/show_unread"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Unread"
+				android:checked="true"/>
+		</RadioGroup>	
+	</LinearLayout>
 	<com.admob.android.ads.AdView
 		android:id="@+id/post_list_ad"
 		android:layout_width="fill_parent"
@@ -47,5 +72,4 @@
 		feeddroid:secondaryTextColor="#CCCCCC"
 		/>
 
-		
 </LinearLayout>

@@ -129,7 +129,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		WebView postText = (WebView)findViewById(R.id.postText);
 		
 		 String html =
-             "<html><head><style type=\"text/css\">body { background-color: #201c19; color: white; } a { color: #ddf; }</style></head><body>" +
+             "<html><head><style type=\"text/css\">body { background-color: #003333; color: white; } a { color: #ddf; }</style></head><body>" +
              getBody() +
              "</body></html>";
 

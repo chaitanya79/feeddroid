@@ -31,10 +31,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
 import android.widget.CursorAdapter;
 import android.widget.Filterable;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RadioButton;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
@@ -58,14 +61,28 @@ public class PostListActivity extends ListActivity {
 	
 	private long mPrevId = -1;
 	private long mNextId = -1;
+	private boolean showAll = false;
+	private Context mContext = this;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.post_list);
+
+		RadioButton unread = (RadioButton) findViewById(R.id.show_unread);
+		RadioButton all = (RadioButton) findViewById(R.id.show_all);
 		
+		unread.setOnClickListener(radio_listener);
+		all.setOnClickListener(radio_listener);
+
 		Uri uri = getIntent().getData();
-		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on asc");
+		
+		// Show unread/all based on radio button state
+		if (showAll)
+			mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on asc");
+		else
+			mCursor = managedQuery(uri, PROJECTION, "read=0", null, "posted_on asc");
+		
 		startManagingCursor(mCursor);
 		mId = Long.parseLong(uri.getPathSegments().get(1));
 		
@@ -91,6 +108,23 @@ public class PostListActivity extends ListActivity {
 		cChannel.close();
 		
 	}
+	
+	private OnClickListener radio_listener = new OnClickListener() {
+		public void onClick(View v) {
+			RadioButton rb = (RadioButton) v;
+			if (rb.getId() == R.id.show_all) {
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, "posted_on asc");
+				ListAdapter adapter = new PostListAdapter(mCursor, getListView().getContext());
+				setListAdapter(adapter);
+			} else {
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, "read=0", null, "posted_on asc");
+				ListAdapter adapter = new PostListAdapter(mCursor, getListView().getContext());
+				setListAdapter(adapter);
+			}
+			getListView().invalidate();
+			
+		}
+	};
 	
 	@Override
 	public void onStart() {
