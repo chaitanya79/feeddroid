@@ -37,5 +37,7 @@
     <string name="post_show">Show: </string>
     <string name="all">All</string>
     <string name="unread">Unread</string>
+    <string name="starred">Starred</string>
+    <string name="star_this">Star This!</string>
     
 </resources>

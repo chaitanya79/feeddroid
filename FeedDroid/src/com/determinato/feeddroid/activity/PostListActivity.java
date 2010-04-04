@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
 import android.widget.CursorAdapter;
 import android.widget.Filterable;
 import android.widget.ListAdapter;
@@ -54,7 +53,7 @@ public class PostListActivity extends ListActivity {
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Posts._ID, FeedDroid.Posts.CHANNEL_ID,
 		FeedDroid.Posts.TITLE, FeedDroid.Posts.READ,
-		FeedDroid.Posts.DATE };
+		FeedDroid.Posts.DATE, FeedDroid.Posts.STARRED };
 	
 	private Cursor mCursor;
 	private long mId = -1;
@@ -71,12 +70,13 @@ public class PostListActivity extends ListActivity {
 
 		RadioButton unread = (RadioButton) findViewById(R.id.show_unread);
 		RadioButton all = (RadioButton) findViewById(R.id.show_all);
+		RadioButton starred = (RadioButton) findViewById(R.id.show_starred);
 		
 		unread.setOnClickListener(radio_listener);
 		all.setOnClickListener(radio_listener);
-
-		Uri uri = getIntent().getData();
+		starred.setOnClickListener(radio_listener);
 		
+		Uri uri = getIntent().getData();
 		
 		mCursor = managedQuery(uri, PROJECTION, "read=0", null, "posted_on desc");
 		
@@ -108,16 +108,25 @@ public class PostListActivity extends ListActivity {
 	
 	private OnClickListener radio_listener = new OnClickListener() {
 		public void onClick(View v) {
+			ListAdapter adapter = null;
 			RadioButton rb = (RadioButton) v;
-			if (rb.getId() == R.id.show_all) {
+			
+			switch(rb.getId()) {
+			case R.id.show_all:
 				mCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, "posted_on desc");
-				ListAdapter adapter = new PostListAdapter(mCursor, getListView().getContext());
-				setListAdapter(adapter);
-			} else {
+				break;
+			case R.id.show_starred:
+				Log.d(TAG, "show_starred clicked");
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, "starred=1", null, "posted_on desc");
+				break;
+			default:
 				mCursor = managedQuery(getIntent().getData(), PROJECTION, "read=0", null, "posted_on desc");
-				ListAdapter adapter = new PostListAdapter(mCursor, getListView().getContext());
-				setListAdapter(adapter);
+				break;
+
 			}
+				
+			adapter = new PostListAdapter(mCursor, mContext);
+			getListView().setAdapter(adapter);
 			getListView().invalidate();
 			
 		}
@@ -137,6 +146,7 @@ public class PostListActivity extends ListActivity {
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
+		Log.d(TAG, "List item clicked: " + id);
 		Uri uri = 
 			ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI, id);
 		String action = getIntent().getAction();

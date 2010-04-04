@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import android.R;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -32,6 +31,7 @@ import android.graphics.Typeface;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.determinato.feeddroid.provider.FeedDroid;
@@ -47,6 +47,7 @@ public class PostListRow extends ViewGroup {
 	
 	private TextView mSubject;
 	private TextView mDate;
+	private ImageView mStar;
 	
 	private Rect mRect;
 	private Paint mGray;
@@ -73,11 +74,17 @@ public class PostListRow extends ViewGroup {
 		
 		mDate = new TextView(ctx);
 		mDate.setId(DATE_ID);
-		mDate.setTextColor(com.determinato.feeddroid.R.color.gray);
+		//mDate.setTextColor(com.determinato.feeddroid.R.color.gray);
 		
 		LayoutParams dateRules = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		
 		addView(mDate, dateRules);
+		
+		mStar = new ImageView(ctx);
+		mStar.setImageResource(android.R.drawable.star_on);
+		LayoutParams starRules = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		
+		addView(mStar, starRules);
 	}
 	
 	@Override
@@ -88,9 +95,13 @@ public class PostListRow extends ViewGroup {
 		int dateh = mDate.getMeasuredHeight();
 		int selfw = getMeasuredWidth();
 		int selfh = getMeasuredHeight();
+		int starh = mStar.getMeasuredHeight();
+		int starw = mStar.getMeasuredWidth();
 		
 		mSubject.layout(0, 0, subjw, subjh);
-		mDate.layout(selfw - datew, selfh - (dateh + 4), selfw, selfh - 4);
+		mDate.layout((selfw - starw) - datew, selfh - (dateh + 4), selfw, selfh - 4);
+		mStar.layout(selfw - starw, selfh - (dateh + 4), selfw, selfh - 4);
+		
 		
 		
 	}
@@ -102,6 +113,8 @@ public class PostListRow extends ViewGroup {
 		mSubject.measure(widthSpec, heightSpec);
 		mDate.measure(getChildMeasureSpec(widthSpec, 0, mDate.getLayoutParams().width),
 				getChildMeasureSpec(widthSpec, 0, mDate.getLayoutParams().height));
+		mStar.measure(getChildMeasureSpec(widthSpec, 0, mStar.getLayoutParams().width),
+				getChildMeasureSpec(widthSpec, 0, mStar.getLayoutParams().height));
 		
 		int h;
 		int lines = mSubject.getLineCount();
@@ -115,6 +128,9 @@ public class PostListRow extends ViewGroup {
 			
 			if ((linew + 10) > (w - mDate.getMeasuredWidth()))
 				h += mDate.getMeasuredHeight();
+			
+			if ((linew + 10) > (w - mStar.getMeasuredHeight()))
+				h += mStar.getMeasuredHeight();
 		}
 		
 		setMeasuredDimension(w, h+4);
@@ -139,6 +155,12 @@ public class PostListRow extends ViewGroup {
 		}
 		mSubject.setText(cursor.getString(cursor.getColumnIndex(FeedDroid.Posts.TITLE)));
 		String dateStr = cursor.getString(cursor.getColumnIndex(FeedDroid.Posts.DATE));
+		int starred = cursor.getInt(cursor.getColumnIndex(FeedDroid.Posts.STARRED));
+		
+		if (starred == 1)
+			mStar.setImageResource(android.R.drawable.star_on);
+		else
+			mStar.setVisibility(INVISIBLE);
 		
 		try {
 			Date date = mDateFormatDb.parse(dateStr);
