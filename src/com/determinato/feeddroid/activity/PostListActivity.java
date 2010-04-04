@@ -77,11 +77,8 @@ public class PostListActivity extends ListActivity {
 
 		Uri uri = getIntent().getData();
 		
-		// Show unread/all based on radio button state
-		if (showAll)
-			mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on asc");
-		else
-			mCursor = managedQuery(uri, PROJECTION, "read=0", null, "posted_on asc");
+		
+		mCursor = managedQuery(uri, PROJECTION, "read=0", null, "posted_on desc");
 		
 		startManagingCursor(mCursor);
 		mId = Long.parseLong(uri.getPathSegments().get(1));
@@ -113,11 +110,11 @@ public class PostListActivity extends ListActivity {
 		public void onClick(View v) {
 			RadioButton rb = (RadioButton) v;
 			if (rb.getId() == R.id.show_all) {
-				mCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, "posted_on asc");
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, "posted_on desc");
 				ListAdapter adapter = new PostListAdapter(mCursor, getListView().getContext());
 				setListAdapter(adapter);
 			} else {
-				mCursor = managedQuery(getIntent().getData(), PROJECTION, "read=0", null, "posted_on asc");
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, "read=0", null, "posted_on desc");
 				ListAdapter adapter = new PostListAdapter(mCursor, getListView().getContext());
 				setListAdapter(adapter);
 			}
