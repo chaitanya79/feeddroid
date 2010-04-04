@@ -65,7 +65,7 @@ public class PostListActivity extends ListActivity {
 		setContentView(R.layout.post_list);
 		
 		Uri uri = getIntent().getData();
-		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on desc");
+		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on asc");
 		startManagingCursor(mCursor);
 		mId = Long.parseLong(uri.getPathSegments().get(1));
 		
