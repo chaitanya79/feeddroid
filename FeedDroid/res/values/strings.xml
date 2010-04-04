@@ -34,4 +34,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="updates_available">RSS Feeds have been updated.</string>
+    <string name="post_show">Show: </string>
+    <string name="all">All</string>
+    <string name="unread">Unread</string>
+    
 </resources>
