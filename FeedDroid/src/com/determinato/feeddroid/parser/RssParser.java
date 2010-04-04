@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -211,7 +212,7 @@ public class RssParser extends DefaultHandler {
 				
 				Cursor dup = mResolver.query(listUri, dupProj, "title = ? AND url = ?",
 						new String[] {mPostBuf.title, mPostBuf.link}, null);
-				Log.d(TAG, "title: " + mPostBuf.title);
+				
 				if (dup.getCount() == 0) {
 					ContentValues values = new ContentValues();
 					
@@ -250,15 +251,22 @@ public class RssParser extends DefaultHandler {
 		
 		if ((mState & STATE_IN_ITEM) == 0)
 			return;
-		
+		StringBuffer str = new StringBuffer();
 		switch(mState) {
 		case STATE_IN_ITEM | STATE_IN_ITEM_TITLE:
-			mPostBuf.title = new String(ch, start, length);
+			str.append(new String(ch, start, length));
+			if (mPostBuf.title == null)
+				mPostBuf.title = str.toString();
+			else
+				mPostBuf.title += str.toString();
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_DESC:
-			StringBuilder builder = new StringBuilder();
-			builder.append(new String(ch, start, length));
-			mPostBuf.desc = builder.toString();
+			str.append(new String(ch, start, length));
+			if (mPostBuf.desc == null)
+				mPostBuf.desc = str.toString();
+			else
+				mPostBuf.desc += str.toString();
+			
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_LINK:
 			mPostBuf.link = new String(ch, start, length);
@@ -283,7 +291,10 @@ public class RssParser extends DefaultHandler {
 		public ChannelPost() {}
 		
 		public void setDate(String str) {
+			
+			
 			try {
+			
 				date = DateUtils.parseDate(str);
 			}
 			catch (DateParseException e) {

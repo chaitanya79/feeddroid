@@ -53,7 +53,6 @@ public class PostListRow extends ViewGroup {
 	
 	static {
 		mDateFormatDb = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-		//mDateFormatDb = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z");
 		mDateFormatToday = new SimpleDateFormat("h:mma");
 		mDateFormat = new SimpleDateFormat("MM/dd/yyyy h:mma");
 	}
@@ -131,11 +130,13 @@ public class PostListRow extends ViewGroup {
 	}
 	
 	public void bindView(Cursor cursor) {
-		if (cursor.getInt(cursor.getColumnIndex(FeedDroid.Posts.READ)) != 0)
+		if (cursor.getInt(cursor.getColumnIndex(FeedDroid.Posts.READ)) != 0) {
 			mSubject.setTypeface(Typeface.DEFAULT);
-		else
+			mDate.setTypeface(Typeface.DEFAULT);
+		} else {
 			mSubject.setTypeface(Typeface.DEFAULT_BOLD);
-
+			mDate.setTypeface(Typeface.DEFAULT_BOLD);
+		}
 		mSubject.setText(cursor.getString(cursor.getColumnIndex(FeedDroid.Posts.TITLE)));
 		String dateStr = cursor.getString(cursor.getColumnIndex(FeedDroid.Posts.DATE));
 		

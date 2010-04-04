@@ -63,7 +63,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	private long mNextPostId = -1;
 	private GestureLibrary mLibrary;
 	private GestureFilter mDetector;
-	private Context mContext = this;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		
 		Uri uri = getIntent().getData();
 		
-		mCursor = managedQuery(uri, PROJECTION, null, null, null);
+		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on asc");
 		
 		if (mCursor == null || !mCursor.moveToFirst())
 			finish();
@@ -108,7 +108,6 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	}
 	
 	public void initWithData() {
-		Log.d(TAG, "body: " + getBody());
 		ContentResolver resolver = getContentResolver();
 		
 		Cursor cChannel = resolver.query(ContentUris.withAppendedId(FeedDroid.Channels.CONTENT_URI, mChannelId),

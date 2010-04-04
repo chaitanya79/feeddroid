@@ -250,7 +250,6 @@ public class FeedDroidProvider extends ContentProvider {
 	
 	@Override
 	public Uri insert(Uri url, ContentValues initialValues) {
-		Log.d(TAG, "In insert()...");
 		long rowId;
 		ContentValues values;
 		
