@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -76,14 +77,13 @@ public class ChannelEditActivity extends Activity {
 	}
 	
 	@Override
-	protected void onPause() {
-		super.onPause();
-		
-		if (mCursor == null)
-			return;
-		
-		updateProvider();
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK)
+			finish();
+		return super.onKeyDown(keyCode, event);
 	}
+
+	
 	
 	private void updateProvider() {
 		if (mCursor == null)
