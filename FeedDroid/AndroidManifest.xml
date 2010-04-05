@@ -73,8 +73,10 @@
 			</intent-filter>
 		</activity>
 		
+		<service android:enabled="false" android:name=".service.FeedDroidUpdateService">
+		</service>
 		
-		 <meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
+		<meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 	
