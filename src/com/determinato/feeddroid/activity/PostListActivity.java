@@ -62,15 +62,18 @@ public class PostListActivity extends ListActivity {
 	private long mNextId = -1;
 	private boolean showAll = false;
 	private Context mContext = this;
+	private RadioButton unread;
+	private RadioButton all;
+	private RadioButton starred;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.post_list);
 
-		RadioButton unread = (RadioButton) findViewById(R.id.show_unread);
-		RadioButton all = (RadioButton) findViewById(R.id.show_all);
-		RadioButton starred = (RadioButton) findViewById(R.id.show_starred);
+		unread = (RadioButton) findViewById(R.id.show_unread);
+		all = (RadioButton) findViewById(R.id.show_all);
+		starred = (RadioButton) findViewById(R.id.show_starred);
 		
 		unread.setOnClickListener(radio_listener);
 		all.setOnClickListener(radio_listener);
