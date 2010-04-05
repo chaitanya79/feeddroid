@@ -308,24 +308,18 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		}
 		return false;
 	}
-	
-	@Override
+
 	public void onDoubleTap() {
-		// do nothing
+		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void onSwipe(int direction) {
-		switch(direction) {
-		case GestureFilter.SWIPE_RIGHT:
-			Toast.makeText(this, "Swipe Right", Toast.LENGTH_SHORT).show();
-			break;
-		case GestureFilter.SWIPE_LEFT:
-			Toast.makeText(this, "Swipe Left", Toast.LENGTH_SHORT).show();
-			break;
-		}
+		// TODO Auto-generated method stub
+		
 	}
+	
+	
 	
 }
 

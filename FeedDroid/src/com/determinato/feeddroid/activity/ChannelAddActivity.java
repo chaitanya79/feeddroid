@@ -55,7 +55,7 @@ public class ChannelAddActivity extends Activity {
 		Button add = (Button) findViewById(R.id.add);
 		add.setOnClickListener(new View.OnClickListener() {
 			
-			@Override
+			
 			public void onClick(View v) {
 				addChannel();
 			}
