@@ -20,15 +20,18 @@ import java.util.HashMap;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -74,7 +77,6 @@ public class ChannelListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_list);
         
-
         Intent intent = getIntent();
         if (intent.getData() == null)
         	intent.setData(FeedDroid.Channels.CONTENT_URI);
@@ -300,5 +302,7 @@ public class ChannelListActivity extends ListActivity {
 			});
 		}
 	}
+	
+	
 }
 
