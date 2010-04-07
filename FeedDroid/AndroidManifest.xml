@@ -73,7 +73,14 @@
 			</intent-filter>
 		</activity>
 		
+		<service android:name=".service.FeedDroidUpdateService">
+		</service>
 		
+		<receiver android:name=".parser.RssParserAlarmReceiver">
+			<intent-filter>
+				<action android:name="com.determinato.feeddroid.ACTION_REFRESH_CHANNELS"/>
+			</intent-filter>
+		</receiver>
 		
 		<meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
 	</application>

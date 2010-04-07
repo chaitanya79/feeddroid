@@ -18,8 +18,10 @@ package com.determinato.feeddroid.activity;
 
 import java.util.HashMap;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -49,6 +51,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
+import com.determinato.feeddroid.service.FeedDroidUpdateService;
 import com.determinato.feeddroid.util.DownloadManager;
 import com.determinato.feeddroid.view.ChannelListRow;
 
@@ -65,6 +68,8 @@ public class ChannelListActivity extends ListActivity {
 	
 	private Cursor mCursor;
 	private DownloadManager mDownloadManager;
+	private FeedDroidUpdateService mUpdateService;
+	private NotificationManager mNotificationManager;
 	
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Channels._ID, FeedDroid.Channels.ICON,
@@ -76,7 +81,14 @@ public class ChannelListActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_list);
+
+        Intent serviceIntent = new Intent(this, FeedDroidUpdateService.class);
+        //bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
+        startService(serviceIntent);
         
+        
+        // Set a system alarm to handle notifications
+        setUpdateAlarm();
         Intent intent = getIntent();
         if (intent.getData() == null)
         	intent.setData(FeedDroid.Channels.CONTENT_URI);
@@ -89,6 +101,8 @@ public class ChannelListActivity extends ListActivity {
         ListAdapter adapter = new ChannelListAdapter(this, mCursor);
         setListAdapter(adapter);
         registerForContextMenu(getListView());
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(1);
         
     }
 	
@@ -124,6 +138,20 @@ public class ChannelListActivity extends ListActivity {
 		return true;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		mNotificationManager.cancel(1);
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Intent serviceIntent = new Intent(this, FeedDroidUpdateService.class);
+		stopService(serviceIntent);
+		unbindService(mConnection);
+	}
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -170,6 +198,12 @@ public class ChannelListActivity extends ListActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	private void setUpdateAlarm() {
+		AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+		String ALARM_ACTION = "FETCH_AND_PARSE_RSS";
+		
 	}
 	
 	private final void refreshAllChannels() {
@@ -303,6 +337,15 @@ public class ChannelListActivity extends ListActivity {
 		}
 	}
 	
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mUpdateService = ((FeedDroidUpdateService.FDUpdateBinder)service).getService();
+		}
+		
+		public void onServiceDisconnected(ComponentName className) {
+			mUpdateService = null;
+		}
+	};
 	
 }
 
