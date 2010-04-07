@@ -309,7 +309,12 @@ public class FeedDroidProvider extends ContentProvider {
 			qb.setTables("channels");
 			qb.appendWhere("_id=" + uri.getPathSegments().get(1));
 			break;
-			
+		
+		case POSTS:
+			qb.setTables("posts");
+			qb.setProjectionMap(POST_LIST_PROJECTION);
+			defaultSort = FeedDroid.Posts.DEFAULT_SORT_ORDER;
+			break;
 		case CHANNEL_POSTS:
 			qb.setTables("posts");
 			qb.appendWhere("channel_id=" + uri.getPathSegments().get(1));
