@@ -18,7 +18,6 @@ package com.determinato.feeddroid.activity;
 
 import java.util.HashMap;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.NotificationManager;
@@ -83,12 +82,8 @@ public class ChannelListActivity extends ListActivity {
         setContentView(R.layout.channel_list);
 
         Intent serviceIntent = new Intent(this, FeedDroidUpdateService.class);
-        //bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
         startService(serviceIntent);
         
-        
-        // Set a system alarm to handle notifications
-        setUpdateAlarm();
         Intent intent = getIntent();
         if (intent.getData() == null)
         	intent.setData(FeedDroid.Channels.CONTENT_URI);
@@ -102,7 +97,7 @@ public class ChannelListActivity extends ListActivity {
         setListAdapter(adapter);
         registerForContextMenu(getListView());
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(1);
+        
         
     }
 	
@@ -142,14 +137,13 @@ public class ChannelListActivity extends ListActivity {
 	public void onResume() {
 		super.onResume();
 		mNotificationManager.cancel(1);
+		
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		Intent serviceIntent = new Intent(this, FeedDroidUpdateService.class);
-		stopService(serviceIntent);
-		unbindService(mConnection);
+		
 	}
 	
 	@Override
@@ -199,12 +193,7 @@ public class ChannelListActivity extends ListActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	private void setUpdateAlarm() {
-		AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-		String ALARM_ACTION = "FETCH_AND_PARSE_RSS";
-		
-	}
+
 	
 	private final void refreshAllChannels() {
 		if (mCursor.moveToFirst() == false) {
@@ -337,15 +326,8 @@ public class ChannelListActivity extends ListActivity {
 		}
 	}
 	
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mUpdateService = ((FeedDroidUpdateService.FDUpdateBinder)service).getService();
-		}
-		
-		public void onServiceDisconnected(ComponentName className) {
-			mUpdateService = null;
-		}
-	};
+	
+
 	
 }
 
