@@ -39,5 +39,22 @@
     <string name="unread">Unread</string>
     <string name="starred">Starred</string>
     <string name="star_this">Star This!</string>
+    <string name="mark_all_read">Mark All As Read</string>
+    <string name="auto_update">Automatically Update Feeds</string>
+    <string name="update_freq">Update Frequency</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="prefs">Preferences</string>
+    <string name="prefs_label">FeedDroid Preferences</string>
+    
+    <string-array name="update_freq_options">
+		<item>Every Minute</item>
+		<item>Every 15 Minutes</item>
+		<item>Every 35 Minutes</item>
+		<item>Every 45 Minutes</item>
+		<item>Every Hour</item>
+		<item>Every 90 Minutes</item>
+		<item>Every Two Hours</item>
+	</string-array>
     
 </resources>

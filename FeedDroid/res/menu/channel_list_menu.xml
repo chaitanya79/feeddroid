@@ -21,4 +21,5 @@
   		android:icon="@android:drawable/ic_menu_add"
   		android:alphabeticShortcut="a"
   		android:numericShortcut="3"/>
+
 </menu>

@@ -1,125 +1,135 @@
 package com.determinato.feeddroid.service;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.activity.ChannelListActivity;
+import com.determinato.feeddroid.activity.PreferencesActivity;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
+import com.determinato.feeddroid.util.DownloadManager;
 
 public class FeedDroidUpdateService extends Service {
 	private static final String TAG = "FeedDroidUpdateService";
+	private static final String ALARM_ACTION = "com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM";
 	private NotificationManager mNotificationMgr;
-	private RssUpdaterTask mTask;
-	private ContentResolver mResolver;
+	private SharedPreferences mPreferences;
 	private boolean mHasUpdates;
+	private PendingIntent mPending;
+	private AlarmManager mAlarmManager;
+	private int mUpdateFrequency;	// measured in minutes
 	
+	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
 	
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		if (mTask != null && mTask.getStatus() == AsyncTask.Status.RUNNING) {
-			mTask.cancel(true);
-		}
+	public void onCreate() {
+		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+		Intent intent = new Intent(ALARM_ACTION);
+		mPending = PendingIntent.getBroadcast(this, 0, intent, 0);
+		mPreferences = getSharedPreferences(PreferencesActivity.USER_PREFERENCE, Activity.MODE_PRIVATE);
+		mUpdateFrequency = mPreferences.getInt(PreferencesActivity.PREF_UPDATE_FREQ, 15);
 	}
 	
 	// Pre-2.0
 	@Override
 	public void onStart(Intent intent, int startId) {
-		doStart(intent, startId);
 		super.onStart(intent, startId);
-		
+		if (mPreferences.getBoolean(PreferencesActivity.PREF_AUTO_UPDATE, false))
+			doStart(intent, startId);
+		else {
+			mAlarmManager.cancel(mPending);
+			stopSelf();
+		}
 	}
 
-	// 2.0+
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		doStart(intent, startId);
-		return super.onStartCommand(intent, flags, startId);
-	}
-	
+
 	void doStart(Intent intent, int startId) {
-		mResolver = getContentResolver();
-		Cursor c = mResolver.query(FeedDroid.Channels.CONTENT_URI,
-				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL},
-				null, null, null);
-		if (c.getCount() == 0)
+		Cursor c = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
+				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL}, null, null, null);
+		
+		if (c.getCount() == 0) {
+			c.close();
 			return;
+		}
+		
 		c.moveToFirst();
+		
 		do {
-			RssFeed feed = new RssFeed();
-			feed.id = c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
-			feed.url = c.getString(c.getColumnIndex(FeedDroid.Channels.URL));
-			(mTask = new RssUpdaterTask()).execute(feed);
-		} while (c.moveToNext());
-		
-		if (mHasUpdates) {
-			mNotificationMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			Notification notification = new Notification();
-			int icon = R.drawable.rss_status_bar;
-			String tickerTxt = getString(R.string.updates_available);
-			String titleTxt = getString(R.string.app_name);
-			Intent startActivity = new Intent(this, ChannelListActivity.class);
-			PendingIntent pi = PendingIntent.getActivity(this, 0, startActivity, 0);
-			notification.setLatestEventInfo(getApplicationContext(), titleTxt, tickerTxt, pi);
-			mNotificationMgr.notify(1, notification);
-			
-		}
-	}
-	
-	static void scheduleUpdates(Context ctx) {
-		final Intent intent = new Intent(ctx, FeedDroidUpdateService.class);
-		final PendingIntent pi = PendingIntent.getService(ctx, 0, intent, 0);
-		
-		final AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
-		alarmManager.cancel(pi);
-		alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 60000, pi);
-	}
-	
-	private class RssUpdaterTask extends AsyncTask<RssFeed, Void, Void> {
+			long id = c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
+			String url = c.getString(c.getColumnIndex(FeedDroid.Channels.URL));
+			parseChannelRss(id, url);
+		} while(c.moveToNext());
+		c.close();
+		if (mHasUpdates) 
+			sendNotification();
 
-		@Override
-		public Void doInBackground(RssFeed... params) {
-			RssFeed feed = params[0];
-			Cursor p = mResolver.query(FeedDroid.Posts.CONTENT_URI, 
-					new String[] {FeedDroid.Posts._ID}, "channel_id=" + feed.id, null, null);
-			int oldPostCount = p.getCount();
-			Handler handler = new Handler();
-			try {
-				new RssParser(mResolver).syncDb(handler, feed.id, feed.url);
-			} catch(Exception e) {
-				Log.e("RssUpdaterTask", Log.getStackTraceString(e));
-			}
-			if (p.requery()) {
-				int newPostCount = p.getCount();
-				if (newPostCount > oldPostCount) {
-					mHasUpdates = true;
+		//scheduleUpdate();
+		stopSelf();
+	}
+	
+	private void scheduleUpdate() {
+		int alarmType = AlarmManager.ELAPSED_REALTIME;
+		long time = SystemClock.elapsedRealtime() + mUpdateFrequency * 60 * 1000;
+		mAlarmManager.set(alarmType, time, mPending);
+	}
+	
+	private void sendNotification() {
+		mNotificationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		int icon = R.drawable.rss_status_bar;
+		String tickerTxt = getString(R.string.updates_available);
+		String titleTxt = getString(R.string.app_name);
+		Notification notification = new Notification(icon, tickerTxt, System.currentTimeMillis());
+		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+		Intent appIntent = new Intent(getApplicationContext(), ChannelListActivity.class);
+		PendingIntent pending = PendingIntent.getActivity(getApplicationContext(), 0, appIntent, 0);
+		notification.setLatestEventInfo(getApplicationContext(), titleTxt, tickerTxt, pending);
+		mNotificationMgr.notify(1, notification);
+	}
+	
+	private void parseChannelRss(final long id, final String url) {
+		Handler handler = new Handler();
+		DownloadManager manager = new DownloadManager(handler);
+		Thread t = new Thread() {
+			public void run() {
+				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
+						new String[] {FeedDroid.Posts._ID}, "channel_id=" + id, null, null);
+				if (p.getCount() == 0) {
+					
+					p.close();
+					return;
 				}
+				int oldPostCount = p.getCount();
+				
+				try {
+					new RssParser(getContentResolver()).syncDb(id, url);
+				} catch(Exception e) {
+					Log.e("RssUpdaterTask", Log.getStackTraceString(e));
+				}
+				if (p.requery()) {
+					int newPostCount = p.getCount();
+					if (newPostCount > oldPostCount) {
+						mHasUpdates = true;
+					}
+				}
+				p.close();
+				
 			}
-			p.close();
-			return null;
-		}
-
-		
-	}
-	
-	private class RssFeed {
-		String url;
-		long id;
+		};
+		manager.schedule(t);
 	}
 }

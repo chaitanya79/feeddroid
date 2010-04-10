@@ -19,6 +19,7 @@ package com.determinato.feeddroid.activity;
 import android.app.ListActivity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -48,7 +49,7 @@ public class PostListActivity extends ListActivity {
 	private static final String TAG = "PostListActivity";
 	private static final int PREV_ID = R.id.menu_prev_channel;
 	private static final int NEXT_ID = R.id.menu_next_channel;
-	
+	private static final int MARK_ALL_READ_ID = R.id.menu_mark_all_read;
 	
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Posts._ID, FeedDroid.Posts.CHANNEL_ID,
@@ -116,14 +117,14 @@ public class PostListActivity extends ListActivity {
 			
 			switch(rb.getId()) {
 			case R.id.show_all:
-				mCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, "posted_on desc");
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, null);
 				break;
 			case R.id.show_starred:
 				Log.d(TAG, "show_starred clicked");
-				mCursor = managedQuery(getIntent().getData(), PROJECTION, "starred=1", null, "posted_on desc");
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, "starred=1", null, null);
 				break;
 			default:
-				mCursor = managedQuery(getIntent().getData(), PROJECTION, "read=0", null, "posted_on desc");
+				mCursor = managedQuery(getIntent().getData(), PROJECTION, "read=0", null, null);
 				break;
 
 			}
@@ -182,9 +183,21 @@ public class PostListActivity extends ListActivity {
 			return prevChannel();
 		case NEXT_ID:
 			return nextChannel();
+		case MARK_ALL_READ_ID:
+			markAllPostsRead();
+			break;
 		}
 		
 		return super.onOptionsItemSelected(item);
+	}
+	
+	
+	private void markAllPostsRead() {
+		ContentValues values = new ContentValues();
+		values.put("read", 1);
+		getContentResolver().update(FeedDroid.Posts.CONTENT_URI, values, "channel_id=" + mId, null);
+		finish();
+		
 	}
 	
 	private void getSiblings() {

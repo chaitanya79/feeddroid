@@ -15,8 +15,8 @@
    limitations under the License.
  -->
  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.determinato.feeddroid" android:versionCode="7"
-	android:versionName="1.0alpha4">
+	package="com.determinato.feeddroid" android:versionCode="8"
+	android:versionName="1.0 Beta 1">
 	<supports-screens android:smallScreens="false"
 		android:normalScreens="true"
 		android:largeScreens="true"/>
@@ -73,10 +73,23 @@
 			</intent-filter>
 		</activity>
 		
-		<service android:name=".service.FeedDroidUpdateService">
-		</service>
-		
-		
+		<activity android:name=".activity.PreferencesActivity"
+			android:label="@string/prefs_label">
+			<intent-filter android:label="@string/prefs_label">
+				<action android:name="android.intent.action.VIEW" />
+				<action android:name="android.intent.action.EDIT" />
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:mimeType="vnd.android.cursor.dir/vnd.feeddroid.interval"/>
+			</intent-filter>	
+		</activity>
+			
+		<service android:name=".service.FeedDroidUpdateService" />
+
+		<receiver android:name=".receivers.AlarmReceiver">
+			<intent-filter>
+				<action android:name="com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM"/>
+			</intent-filter>
+		</receiver>
 		
 		<meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
 	</application>
