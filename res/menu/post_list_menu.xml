@@ -24,4 +24,6 @@
 		android:alphabeticShortcut="]" 
 		android:numericShortcut="3" 
 		android:id="@+id/menu_next_channel"></item>
+	<item android:title="@string/mark_all_read"
+		android:id="@+id/menu_mark_all_read"/>
 </menu>

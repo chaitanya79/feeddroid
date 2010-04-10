@@ -93,10 +93,16 @@ public class RssParser extends DefaultHandler {
 		mResolver = resolver;
 	}
 	
-	public long syncDb(Handler h, long id, String rssurl) 
+	public long syncDb(Handler handler, long id, String rssurl) 
 		throws Exception {
+		mHandler = handler;
+		return syncDb(id, rssurl);
+	}
+	
+	public long syncDb(long id, String rssurl) 
+		throws Exception {
+		Log.d(TAG, "Parsing RSS...");
 		
-		mHandler = h;
 		mId = id;
 		mRssUrl = rssurl;
 		

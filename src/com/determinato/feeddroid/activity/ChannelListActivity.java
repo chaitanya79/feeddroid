@@ -18,21 +18,22 @@ package com.determinato.feeddroid.activity;
 
 import java.util.HashMap;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.NotificationManager;
-import android.content.ComponentName;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -64,25 +65,24 @@ public class ChannelListActivity extends ListActivity {
 	public static final int REFRESH_ID = Menu.FIRST + 2;
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
 	public static final int EDIT_ID = R.id.edit_channel;
+	public static final int PREFS_ID = Menu.FIRST;
 	
 	private Cursor mCursor;
 	private DownloadManager mDownloadManager;
-	private FeedDroidUpdateService mUpdateService;
 	private NotificationManager mNotificationManager;
+	private SharedPreferences mPreferences;
 	
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Channels._ID, FeedDroid.Channels.ICON,
 		FeedDroid.Channels.TITLE, FeedDroid.Channels.URL
 	};
 	
+	private static final int SHOW_PREFERENCES = 1;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_list);
-
-        Intent serviceIntent = new Intent(this, FeedDroidUpdateService.class);
-        startService(serviceIntent);
         
         Intent intent = getIntent();
         if (intent.getData() == null)
@@ -97,7 +97,17 @@ public class ChannelListActivity extends ListActivity {
         setListAdapter(adapter);
         registerForContextMenu(getListView());
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        
+        mPreferences = getSharedPreferences(PreferencesActivity.USER_PREFERENCE, MODE_PRIVATE);
+        if (mPreferences.getBoolean(PreferencesActivity.PREF_AUTO_UPDATE, false)) {
+        	Log.d(TAG, "autoupdate set to true");
+        	AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        	Intent i = new Intent("com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM");
+        	PendingIntent pending = PendingIntent.getBroadcast(this, 0, i, 0);
+        	long time = mPreferences.getInt(PreferencesActivity.PREF_UPDATE_FREQ, 0) * 60 * 1000;
+        	Log.d(TAG, "update in " + time / 1000 + " seconds.");
+        	alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + time, time, pending);
+        }
+        	
         
     }
 	
@@ -115,6 +125,8 @@ public class ChannelListActivity extends ListActivity {
 		i.setData(FeedDroid.Channels.CONTENT_URI);
 		i.setAction(Intent.ACTION_INSERT);
 		addItem.setIntent(i);
+		menu.add(addItem.getGroupId(), SHOW_PREFERENCES, Menu.NONE, getString(R.string.prefs))
+		.setIcon(android.R.drawable.ic_menu_preferences);
 		return true;
 	}
 	
@@ -126,10 +138,11 @@ public class ChannelListActivity extends ListActivity {
 		
 		if (haveItems) {
 			menu.add(Menu.CATEGORY_ALTERNATIVE, REFRESH_ALL_ID, Menu.NONE, "Refresh All")
-			.setIcon(R.drawable.redo);
-		
+			//.setIcon(R.drawable.redo);
+			.setIcon(getResources().getDrawable(android.R.drawable.ic_menu_share));
+			
 		}
-		
+
 		return true;
 	}
 
@@ -164,6 +177,7 @@ public class ChannelListActivity extends ListActivity {
 		case DELETE_ID:
 			removeChannel(info.id);
 			return true;
+		
 		default:
 			return false;
 		}
@@ -185,10 +199,16 @@ public class ChannelListActivity extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.d(TAG, "item selected: " + item.getItemId());
+
 		switch(item.getItemId()) {
-		
 		case REFRESH_ALL_ID:
 			refreshAllChannels();
+			return true;
+		case PREFS_ID:
+			Log.d(TAG, "Preferences selected");
+			Intent i = new Intent(this, PreferencesActivity.class);
+			startActivityForResult(i, SHOW_PREFERENCES);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -196,7 +216,7 @@ public class ChannelListActivity extends ListActivity {
 
 	
 	private final void refreshAllChannels() {
-		if (mCursor.moveToFirst() == false) {
+ 		if (mCursor.moveToFirst() == false) {
 			Log.d(TAG, "Move to beginning of cursor failed.");
 			return;
 		}
@@ -205,8 +225,9 @@ public class ChannelListActivity extends ListActivity {
 			refreshChannel();
 			
 		} while (mCursor.moveToNext() == true);
-		
+
 	}
+	
 	
 	private final void refreshChannel() {
 		Handler mRefreshHandler = new Handler();
@@ -230,7 +251,6 @@ public class ChannelListActivity extends ListActivity {
 	}
 	
 	private void removeChannel(final long channelId) {
-		Log.d(TAG, "id to remove: " + channelId);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to remove this channel?")
 			.setCancelable(false)

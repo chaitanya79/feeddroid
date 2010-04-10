@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+  	android:layout_width="fill_parent"
+  	android:layout_height="fill_parent">
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		
+		<CheckBox android:id="@+id/chk_auto_update"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+		
+		<TextView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/auto_update"
+			android:gravity="center_vertical"/>
+	</LinearLayout>
+	
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:paddingTop="15dip">
+		
+		<TextView android:id="@+id/txt_freq"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/update_freq"/>
+		
+		<Spinner android:id="@+id/frequency"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:prompt="@string/update_freq"
+			android:entries="@array/update_freq_options" />
+	</LinearLayout>
+	
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="bottom"
+		android:paddingTop="25dip">
+			
+			<Button android:id="@+id/btn_ok"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/ok"/>
+				
+			<Button android:id="@+id/btn_cancel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/cancel"/>
+	</LinearLayout>	
+</LinearLayout>

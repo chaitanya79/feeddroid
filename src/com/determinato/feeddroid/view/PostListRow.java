@@ -54,6 +54,7 @@ public class PostListRow extends ViewGroup {
 	
 	static {
 		mDateFormatDb = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		//mDateFormatDb = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss Z");
 		mDateFormatToday = new SimpleDateFormat("h:mma");
 		mDateFormat = new SimpleDateFormat("MM/dd/yyyy h:mma");
 	}
@@ -172,11 +173,13 @@ public class PostListRow extends ViewGroup {
 			
 			SimpleDateFormat fmt;
 			
+			fmt = mDateFormat;
+			/*
 			if (now.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR))
 				fmt = mDateFormatToday;
 			else
 				fmt = mDateFormat;
-			
+			*/
 			mDate.setText(fmt.format(date));
 		} catch (ParseException e) {
 			Log.d(TAG, Log.getStackTraceString(e));
