@@ -296,6 +296,7 @@ public class RssParser extends DefaultHandler {
 		
 		public ChannelPost() {}
 		
+		private String strDate;
 		public void setDate(String str) {
 			
 			
@@ -309,10 +310,13 @@ public class RssParser extends DefaultHandler {
 			}
 			if (date == null)
 				date = new Date();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			strDate = dateFormat.format(date);
+			
 		}
 		
 		public String getDate() {
-			return DateUtils.formatDate(mPostBuf.date);
+			return strDate;
 		}
 	}
 

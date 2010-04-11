@@ -122,8 +122,10 @@ public class FeedDroidUpdateService extends Service {
 				}
 				if (p.requery()) {
 					int newPostCount = p.getCount();
+					Log.d(TAG, "oldPostCount: " + oldPostCount);
+					Log.d(TAG, "newPostCount: " + newPostCount);
 					if (newPostCount > oldPostCount) {
-						mHasUpdates = true;
+						sendNotification();
 					}
 				}
 				p.close();
