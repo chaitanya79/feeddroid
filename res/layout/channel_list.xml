@@ -38,7 +38,7 @@
 	<com.admob.android.ads.AdView
 		android:id="@+id/channel_list_ad"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="48dip"
 		feeddroid:backgroundColor="#000000"
 		feeddroid:primaryTextColor="#FFFFFF"
 		feeddroid:secondaryTextColor="#CCCCCC"/>
