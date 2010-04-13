@@ -15,8 +15,8 @@
    limitations under the License.
  -->
  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.determinato.feeddroid" android:versionCode="10"
-	android:versionName="1.0 Beta 1">
+	package="com.determinato.feeddroid" android:versionCode="11"
+	android:versionName="1.0 Beta 2">
 
 	<supports-screens android:smallScreens="false"
 		android:normalScreens="true"
@@ -84,6 +84,17 @@
 			</intent-filter>	
 		</activity>
 			
+		<activity android:name=".activity.SearchActivity"
+			android:label="Search"
+			android:launchMode="singleTop">
+			<intent-filter>
+				<action android:name="android.intent.action.SEARCH" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>	
+			
+			<meta-data android:name="android.app.searchable"
+				android:resource="@xml/searchable"/>
+		</activity>
 		<service android:name=".service.FeedDroidUpdateService" />
 
 		<receiver android:name=".receivers.AlarmReceiver">
@@ -93,10 +104,13 @@
 		</receiver>
 		
 		<meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
+		<meta-data android:name="android.app.default_searchable"
+			android:value=".activity.SearchActivity"/>
 	</application>
 	<uses-sdk android:minSdkVersion="3" />
 	
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+	<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
 </manifest> 

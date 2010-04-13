@@ -22,6 +22,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.graphics.Color;
@@ -76,13 +77,19 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		setContentView(R.layout.post_view);
 		
 		Uri uri = getIntent().getData();
+		String postId = uri.getPathSegments().get(1);
+		
 		mResolver = getContentResolver();
-		mCursor = managedQuery(uri, PROJECTION, null, null, "posted_on desc");
+		mCursor = mResolver.query(uri, PROJECTION, "_id=" + postId, null, "posted_on desc");
+
 		
-		
-		if (mCursor == null || !mCursor.moveToFirst())
+		if (mCursor.getCount() == 0) {
+			Toast.makeText(this, "Unable to locate post", Toast.LENGTH_LONG).show();
+			
 			finish();
+		}
 		
+		mCursor.moveToFirst();
 		mTxtStarred = (TextView) findViewById(R.id.txt_starred);
 		mStarred = (ImageButton) findViewById(R.id.star_post);
 		mStarred.setBackgroundColor(Color.TRANSPARENT);
@@ -112,6 +119,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 
 
 		initWithData();
+		
 	}
 	
 	
@@ -317,6 +325,12 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	public void onSwipe(int direction) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected void onDestroy() {
+		mCursor.close();
+		super.onDestroy();
 	}
 	
 	

@@ -21,5 +21,9 @@
   		android:icon="@android:drawable/ic_menu_add"
   		android:alphabeticShortcut="a"
   		android:numericShortcut="3"/>
+  	<item android:id="@+id/menu_search"
+  		android:title="@string/search_label"
+  		android:icon="@android:drawable/ic_search_category_default"/>
+  		
 
 </menu>

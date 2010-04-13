@@ -53,7 +53,7 @@ public class PostListRow extends ViewGroup {
 	private Paint mGray;
 	
 	static {
-		mDateFormatDb = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		mDateFormatDb = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		//mDateFormatDb = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss Z");
 		mDateFormatToday = new SimpleDateFormat("h:mma");
 		mDateFormat = new SimpleDateFormat("MM/dd/yyyy h:mma");

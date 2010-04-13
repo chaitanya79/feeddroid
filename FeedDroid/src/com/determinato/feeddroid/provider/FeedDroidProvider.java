@@ -46,7 +46,7 @@ import com.determinato.feeddroid.R;
 public class FeedDroidProvider extends ContentProvider {
 	private static final String TAG = "FeedDroidProvider";
 	private static final String DB_NAME = "feeddroid.db";
-	private static final int DB_VERSION = 4;
+	private static final int DB_VERSION = 5;
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
 	private static HashMap<String, String> POST_LIST_PROJECTION;
@@ -97,6 +97,9 @@ public class FeedDroidProvider extends ContentProvider {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + "...");
 			
 			switch(oldVersion) {
+			
+			case 4:
+				break;
 			default:
 				Log.w(TAG, "Version too old, wiping out database contents...");
 				db.execSQL("DROP TABLE IF EXISTS channels");
@@ -297,6 +300,8 @@ public class FeedDroidProvider extends ContentProvider {
 			String[] selectionArgs, String sortOrder) {
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 		String defaultSort = null;
+		String groupBy = null;
+		String having = null;
 		
 		switch(URL_MATCHER.match(uri)) {
 		case CHANNELS:
@@ -313,6 +318,8 @@ public class FeedDroidProvider extends ContentProvider {
 		case POSTS:
 			qb.setTables("posts");
 			qb.setProjectionMap(POST_LIST_PROJECTION);
+			groupBy = "_id";
+			having = "COUNT(title) = 1";
 			defaultSort = FeedDroid.Posts.DEFAULT_SORT_ORDER;
 			break;
 		case CHANNEL_POSTS:
@@ -324,6 +331,8 @@ public class FeedDroidProvider extends ContentProvider {
 			
 		case POST_ID:
 			qb.setTables("posts");
+			groupBy = "_id";
+			having = "COUNT(title) = 1";
 			qb.appendWhere("_id=" + uri.getPathSegments().get(1));
 			break;
 			
@@ -338,7 +347,7 @@ public class FeedDroidProvider extends ContentProvider {
 		else
 			orderBy = sortOrder;
 		
-		Cursor c = qb.query(mDb, projection, selection, selectionArgs, null, null, orderBy);
+		Cursor c = qb.query(mDb, projection, selection, selectionArgs, groupBy, having, orderBy);
 		//Log.d(TAG, DatabaseUtils.dumpCursorToString(c));
 		c.setNotificationUri(getContext().getContentResolver(), uri);
 		return c;

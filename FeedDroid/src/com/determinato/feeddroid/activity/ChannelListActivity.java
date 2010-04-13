@@ -23,6 +23,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -66,6 +67,7 @@ public class ChannelListActivity extends ListActivity {
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
 	public static final int EDIT_ID = R.id.edit_channel;
 	public static final int PREFS_ID = Menu.FIRST;
+	public static final int SEARCH_ID = R.id.search_text;
 	
 	private Cursor mCursor;
 	private DownloadManager mDownloadManager;
@@ -127,6 +129,9 @@ public class ChannelListActivity extends ListActivity {
 		addItem.setIntent(i);
 		menu.add(addItem.getGroupId(), SHOW_PREFERENCES, Menu.NONE, getString(R.string.prefs))
 		.setIcon(android.R.drawable.ic_menu_preferences);
+		
+		MenuItem searchItem = menu.findItem(R.id.menu_search);
+		searchItem.setAlphabeticShortcut(SearchManager.MENU_KEY);
 		return true;
 	}
 	
@@ -199,22 +204,20 @@ public class ChannelListActivity extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(TAG, "item selected: " + item.getItemId());
-
 		switch(item.getItemId()) {
 		case REFRESH_ALL_ID:
 			refreshAllChannels();
 			return true;
 		case PREFS_ID:
-			Log.d(TAG, "Preferences selected");
 			Intent i = new Intent(this, PreferencesActivity.class);
 			startActivityForResult(i, SHOW_PREFERENCES);
 			return true;
+		case SEARCH_ID:
+			onSearchRequested();
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 	private final void refreshAllChannels() {
  		if (mCursor.moveToFirst() == false) {
 			Log.d(TAG, "Move to beginning of cursor failed.");
@@ -345,6 +348,7 @@ public class ChannelListActivity extends ListActivity {
 			});
 		}
 	}
+
 	
 	
 
