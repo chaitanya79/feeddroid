@@ -22,7 +22,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.graphics.Color;

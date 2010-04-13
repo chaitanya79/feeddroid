@@ -12,7 +12,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -152,7 +151,7 @@ public class PreferencesActivity extends Activity {
 			Log.d(TAG, "Item selected: " + id);
 		}
 		
-		public void onNothingSelected(AdapterView parent) {
+		public void onNothingSelected(AdapterView<?> parent) {
 			
 		}
 	}

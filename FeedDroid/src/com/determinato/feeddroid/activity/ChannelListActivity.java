@@ -52,7 +52,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
-import com.determinato.feeddroid.service.FeedDroidUpdateService;
 import com.determinato.feeddroid.util.DownloadManager;
 import com.determinato.feeddroid.view.ChannelListRow;
 
