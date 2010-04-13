@@ -14,7 +14,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  -->
- <resources>
+ <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hello">Hello World, ChannelListActivity!</string>
     <string name="app_name">FeedDroid</string>
     <string name="no_posts">No posts to display.</string>
@@ -46,6 +46,9 @@
     <string name="cancel">Cancel</string>
     <string name="prefs">Preferences</string>
     <string name="prefs_label">FeedDroid Preferences</string>
+    <string name="search_label">Search</string>
+    <string name="search_hint">Enter Search Terms Here</string>
+    <string name="search_results">Search results for \'<xliff:g id="string">%s</xliff:g>\': </string>
     
     <string-array name="update_freq_options">
 		<item>Every Minute</item>
