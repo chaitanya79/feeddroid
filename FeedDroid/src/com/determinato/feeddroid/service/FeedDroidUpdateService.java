@@ -78,7 +78,7 @@ public class FeedDroidUpdateService extends Service {
 		if (mHasUpdates) 
 			sendNotification();
 
-		//scheduleUpdate();
+		
 		stopSelf();
 	}
 	
@@ -94,7 +94,12 @@ public class FeedDroidUpdateService extends Service {
 		String tickerTxt = getString(R.string.updates_available);
 		String titleTxt = getString(R.string.app_name);
 		Notification notification = new Notification(icon, tickerTxt, System.currentTimeMillis());
+		notification.ledOffMS = 0;
+		notification.ledOnMS = 1;
 		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
+		notification.flags |= Notification.DEFAULT_SOUND;
+		long[] vibrate = new long[] {1000, 1000};
+		notification.vibrate = vibrate;
 		Intent appIntent = new Intent(getApplicationContext(), ChannelListActivity.class);
 		PendingIntent pending = PendingIntent.getActivity(getApplicationContext(), 0, appIntent, 0);
 		notification.setLatestEventInfo(getApplicationContext(), titleTxt, tickerTxt, pending);
