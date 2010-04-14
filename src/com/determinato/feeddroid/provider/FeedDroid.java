@@ -33,6 +33,7 @@ public class FeedDroid {
 		public static final String ICON = "icon";
 		public static final String ICON_URL = "icon_url";
 		public static final String LOGO = "logo";
+		public static final String FOLDER_ID = "folder_id";
 	}
 	
 	public interface Posts extends BaseColumns {
@@ -51,5 +52,12 @@ public class FeedDroid {
 		public static final String BODY = "body";
 		public static final String DATE = "posted_on";
 		public static final String STARRED = "starred";
+	}
+	
+	public interface Folders extends BaseColumns {
+		public static final Uri CONTENT_URI =
+			Uri.parse("content://" + AUTHORITY + "/folders");
+		public static final String NAME = "name";
+		public static final String PARENT_ID = "parent_id";
 	}
 }

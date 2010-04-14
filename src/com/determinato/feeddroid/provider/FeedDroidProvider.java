@@ -45,10 +45,12 @@ import com.determinato.feeddroid.R;
 public class FeedDroidProvider extends ContentProvider {
 	private static final String TAG = "FeedDroidProvider";
 	private static final String DB_NAME = "feeddroid.db";
-	private static final int DB_VERSION = 5;
+	private static final int DB_VERSION = 6;
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
 	private static HashMap<String, String> POST_LIST_PROJECTION;
+	private static HashMap<String, String> FOLDER_LIST_PROJECTION;
+	
 	
 	private static final int CHANNELS = 1;
 	private static final int CHANNEL_ID = 2;
@@ -56,6 +58,8 @@ public class FeedDroidProvider extends ContentProvider {
 	private static final int POST_ID = 4;
 	private static final int CHANNEL_POSTS = 5;
 	private static final int CHANNELICON_ID = 6;
+	private static final int FOLDERS = 7;
+	private static final int FOLDER_ID = 8;
 	
 	private static final UriMatcher URL_MATCHER;
 	
@@ -71,11 +75,12 @@ public class FeedDroidProvider extends ContentProvider {
 				"title TEXT UNIQUE, url TEXT UNIQUE, " +
 				"icon TEXT, icon_url TEXT, logo TEXT);";
 			db.execSQL(query);
+			db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");
 		}
 		
 		protected void onCreatePosts(SQLiteDatabase db) {
 			String query = "CREATE TABLE posts (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
-				"channel_id INTEGER, title TEXT, url TEXT, " +
+				"channel_id INTEGER, title TEXT UNIQUE, url TEXT UNIQUE, " +
 				"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0', " +
 				"starred INTEGER(1) DEFAULT '0');";
 			db.execSQL(query);
@@ -85,10 +90,17 @@ public class FeedDroidProvider extends ContentProvider {
 			db.execSQL("CREATE INDEX idx_channel ON posts (channel_id);");
 		}
 		
+		protected void onCreateFolders(SQLiteDatabase db) {
+			String query = "CREATE TABLE folders (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
+				"name TEXT NOT NULL, parent_id INTEGER DEFAULT '0');";
+			db.execSQL(query);
+		}
+		
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			onCreateChannels(db);
 			onCreatePosts(db);
+			onCreateFolders(db);
 		}
 		
 		@Override
@@ -96,8 +108,27 @@ public class FeedDroidProvider extends ContentProvider {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + "...");
 			
 			switch(oldVersion) {
-			
-			case 4:
+			case 5:
+				db.beginTransaction();
+				try {
+					String query = "ALTER TABLE channels ADD folder_id INTEGER DEFAULT '0'";
+					db.execSQL(query);
+					db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");
+					query = "ALTER TABLE posts RENAME TO posts_temp";
+					db.execSQL(query);
+					query = "CREATE TABLE posts(_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
+						"channel_id INTEGER, title TEXT UNIQUE, url TEXT UNIQUE, " + 
+						"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0', " +
+						"starred INTEGER(1) DEFAULT '0');";
+					db.execSQL(query);
+					query = "INSERT INTO posts SELECT * FROM posts_temp;";
+					db.execSQL(query);
+					db.execSQL("DROP TABLE posts_temp");
+					onCreateFolders(db);
+					db.setTransactionSuccessful();
+				} finally {
+					db.endTransaction();
+				}
 				break;
 			default:
 				Log.w(TAG, "Version too old, wiping out database contents...");
@@ -132,6 +163,16 @@ public class FeedDroidProvider extends ContentProvider {
 			where = "_id=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : "");
 			count = mDb.delete("posts", where, selectionArgs);
 			break;
+			
+		case FOLDERS:
+			count = mDb.delete("folders", selection, selectionArgs);
+			break;
+			
+		case FOLDER_ID:
+			where = "_id=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : "");
+			count = mDb.delete("folders", where, selectionArgs);
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URL: " + uri);
 		} 
@@ -155,6 +196,10 @@ public class FeedDroidProvider extends ContentProvider {
 			return "vnd.android.cursor.dir/vnd.feeddroid.post";
 		case POST_ID:
 			return "vnd.android.cursor.item/vnd.feeddroid.post";
+		case FOLDERS:
+			return "vnd.android.cursor.dir/vnd.feeddroid.folder";
+		case FOLDER_ID:
+			return "vnd.android.cursor.item/vnd.feeddroid.folder";
 		default:
 			throw new IllegalArgumentException("Unknown URL: " + uri);
 		}
@@ -252,6 +297,10 @@ public class FeedDroidProvider extends ContentProvider {
 		return mDb.insert("posts", "title", values);
 	}
 	
+	private long insertFolders(ContentValues values) {
+		return mDb.insert("folders", "name", values);
+	}
+	
 	@Override
 	public Uri insert(Uri url, ContentValues initialValues) {
 		long rowId;
@@ -270,6 +319,9 @@ public class FeedDroidProvider extends ContentProvider {
 		} else if (URL_MATCHER.match(url) == POSTS) {
 			rowId = insertPosts(values);
 			uri = ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI, rowId);
+		} else if (URL_MATCHER.match(url) == FOLDERS) {
+			rowId = insertFolders(values);
+			uri = ContentUris.withAppendedId(FeedDroid.Folders.CONTENT_URI, rowId);
 		} else {
 			throw new IllegalArgumentException("Unknown URL: " + url);
 		}
@@ -321,6 +373,7 @@ public class FeedDroidProvider extends ContentProvider {
 			having = "COUNT(title) = 1";
 			defaultSort = FeedDroid.Posts.DEFAULT_SORT_ORDER;
 			break;
+			
 		case CHANNEL_POSTS:
 			qb.setTables("posts");
 			qb.appendWhere("channel_id=" + uri.getPathSegments().get(1));
@@ -332,6 +385,16 @@ public class FeedDroidProvider extends ContentProvider {
 			qb.setTables("posts");
 			groupBy = "_id";
 			having = "COUNT(title) = 1";
+			qb.appendWhere("_id=" + uri.getPathSegments().get(1));
+			break;
+			
+		case FOLDERS:
+			qb.setTables("folders");
+			qb.setProjectionMap(FOLDER_LIST_PROJECTION);
+			break;
+			
+		case FOLDER_ID:
+			qb.setTables("folders");
 			qb.appendWhere("_id=" + uri.getPathSegments().get(1));
 			break;
 			
@@ -377,6 +440,15 @@ public class FeedDroidProvider extends ContentProvider {
 			count = mDb.update("posts", values, where, selectionArgs);
 			break;
 		
+		case FOLDERS:
+			count = mDb.update("folders", values, selection, selectionArgs);
+			break;
+			
+		case FOLDER_ID:
+			where = "_id=" + uri.getPathSegments().get(1) + (!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : "");
+			count = mDb.update("folders", values, where, selectionArgs);
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URL: " + uri);
 		}
@@ -392,8 +464,9 @@ public class FeedDroidProvider extends ContentProvider {
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "channels/#/icon", CHANNELICON_ID);
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "posts", POSTS);
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "posts/#", POST_ID);
-		
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "postlist/#", CHANNEL_POSTS);
+		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "folders", FOLDERS);
+		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "folders/#", FOLDER_ID);
 		
 		CHANNEL_LIST_PROJECTION = new HashMap<String, String>();
 		CHANNEL_LIST_PROJECTION.put(FeedDroid.Channels._ID, "_id");
@@ -412,5 +485,9 @@ public class FeedDroidProvider extends ContentProvider {
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.DATE, "posted_on");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.BODY, "body");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.STARRED, "starred");
+		
+		FOLDER_LIST_PROJECTION = new HashMap<String, String>();
+		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders.NAME, "name");
+		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders.PARENT_ID, "parent_id");
 	}
 }
