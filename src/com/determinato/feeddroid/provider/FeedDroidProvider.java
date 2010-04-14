@@ -73,9 +73,9 @@ public class FeedDroidProvider extends ContentProvider {
 		protected void onCreateChannels(SQLiteDatabase db) {
 			String query = "CREATE TABLE channels (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"title TEXT UNIQUE, url TEXT UNIQUE, " +
-				"icon TEXT, icon_url TEXT, logo TEXT);";
+				"icon TEXT, icon_url TEXT, logo TEXT, folder_id INTEGER(1) DEFAULT '0');";
 			db.execSQL(query);
-			db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");
+			db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");			
 		}
 		
 		protected void onCreatePosts(SQLiteDatabase db) {
