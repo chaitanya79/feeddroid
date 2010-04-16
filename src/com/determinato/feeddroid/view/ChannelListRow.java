@@ -84,10 +84,14 @@ public class ChannelListRow extends RelativeLayout {
 		
 		mName.setTypeface(Typeface.DEFAULT);
 		
+		
 		mName.setText(c.getString(c.getColumnIndex(FeedDroid.Channels.TITLE)));
 		
 		mCount.setTypeface(tf);
-		mCount.setText(new Integer(unreadCount).toString());
+		if (unreadCount > 0)
+			mCount.setText(new Integer(unreadCount).toString());
+		else
+			mCount.setText("");
 	}
 	
 	public void startRefresh() {
