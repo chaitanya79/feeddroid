@@ -54,7 +54,7 @@ public class ChannelListRow extends RelativeLayout {
 		
 		
 		RelativeLayout.LayoutParams rules =
-			new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.FILL_PARENT, 75);
 		
 		addView(v, rules);
 		
