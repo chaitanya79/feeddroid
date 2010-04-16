@@ -28,6 +28,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.text.TextUtils.TruncateAt;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,9 +69,11 @@ public class PostListRow extends ViewGroup {
 		mGray.setColor(com.determinato.feeddroid.R.color.gray);
 		
 		mSubject = new TextView(ctx);
+		mSubject.setEllipsize(TruncateAt.END);
+		mSubject.setSingleLine();
 		mSubject.setId(SUBJECT_ID);
 		
-		LayoutParams subjectRules = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		LayoutParams subjectRules = new LayoutParams(LayoutParams.WRAP_CONTENT, 50);
 		addView(mSubject, subjectRules);
 		
 		mDate = new TextView(ctx);
