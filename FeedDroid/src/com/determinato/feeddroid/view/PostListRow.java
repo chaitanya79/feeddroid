@@ -78,7 +78,7 @@ public class PostListRow extends ViewGroup {
 		
 		mDate = new TextView(ctx);
 		mDate.setId(DATE_ID);
-		//mDate.setTextColor(com.determinato.feeddroid.R.color.gray);
+		
 		
 		LayoutParams dateRules = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		

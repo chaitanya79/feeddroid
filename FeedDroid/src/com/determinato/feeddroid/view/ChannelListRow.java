@@ -82,16 +82,18 @@ public class ChannelListRow extends RelativeLayout {
 		String icon = c.getString(c.getColumnIndex(FeedDroid.Channels.ICON));
 		mIcon.setImageURI(Uri.parse(icon));
 		
-		mName.setTypeface(Typeface.DEFAULT);
-		
-		
 		mName.setText(c.getString(c.getColumnIndex(FeedDroid.Channels.TITLE)));
 		
 		mCount.setTypeface(tf);
-		if (unreadCount > 0)
+		if (unreadCount > 0) {
+			mName.setTypeface(tf, Typeface.BOLD_ITALIC);
 			mCount.setText(new Integer(unreadCount).toString());
-		else
+			mCount.setTypeface(tf, Typeface.BOLD_ITALIC);
+		}
+		else {
+			mName.setTypeface(tf);
 			mCount.setText("");
+		}
 	}
 	
 	public void startRefresh() {
