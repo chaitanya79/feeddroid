@@ -24,6 +24,17 @@
   	<view class="com.determinato.feeddroid.view.ChannelHeader" android:id="@+id/postViewHead"
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content"/>
+
+
+	<com.admob.android.ads.AdView
+		android:id="@+id/post_list_ad"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		feeddroid:backgroundColor="#000000"
+		feeddroid:primaryTextColor="#FFFFFF"
+		feeddroid:secondaryTextColor="#CCCCCC"/>  		
+  		
   		
   	<ScrollView
   		android:layout_width="fill_parent"
@@ -33,7 +44,6 @@
   			android:orientation="vertical"
   			android:layout_width="fill_parent"
   			android:layout_height="fill_parent">
-  		
   			<TextView android:id="@+id/postTitle"
   				android:layout_width="fill_parent"
   				android:layout_height="wrap_content"
@@ -61,14 +71,6 @@
 					android:text="@string/star_this"/>
 						
 			</LinearLayout>
-			<com.admob.android.ads.AdView
-				android:id="@+id/post_list_ad"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_gravity="bottom"
-				feeddroid:backgroundColor="#000000"
-				feeddroid:primaryTextColor="#FFFFFF"
-				feeddroid:secondaryTextColor="#CCCCCC"/>  		
   		</LinearLayout>
   	</ScrollView>
 </LinearLayout>
