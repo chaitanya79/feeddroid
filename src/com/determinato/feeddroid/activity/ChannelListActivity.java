@@ -66,7 +66,7 @@ public class ChannelListActivity extends ListActivity {
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
 	public static final int EDIT_ID = R.id.edit_channel;
 	public static final int PREFS_ID = Menu.FIRST;
-	public static final int SEARCH_ID = R.id.search_text;
+	public static final int SEARCH_ID = R.id.menu_search;
 	
 	private Cursor mCursor;
 	private DownloadManager mDownloadManager;
@@ -131,6 +131,7 @@ public class ChannelListActivity extends ListActivity {
 		
 		MenuItem searchItem = menu.findItem(R.id.menu_search);
 		searchItem.setAlphabeticShortcut(SearchManager.MENU_KEY);
+		
 		return true;
 	}
 	
@@ -203,16 +204,21 @@ public class ChannelListActivity extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent i;
+		
+		Log.d(TAG, "menu item pressed: " + item.getItemId());
 		switch(item.getItemId()) {
 		case REFRESH_ALL_ID:
 			refreshAllChannels();
 			return true;
 		case PREFS_ID:
-			Intent i = new Intent(this, PreferencesActivity.class);
+			i = new Intent(this, PreferencesActivity.class);
 			startActivityForResult(i, SHOW_PREFERENCES);
 			return true;
 		case SEARCH_ID:
+			Log.d(TAG, "Search requested");
 			onSearchRequested();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
