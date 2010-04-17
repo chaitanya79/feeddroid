@@ -16,9 +16,14 @@
 package com.determinato.feeddroid.activity;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -27,19 +32,24 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.determinato.feeddroid.R;
+import com.determinato.feeddroid.parser.FeedParser;
+import com.determinato.feeddroid.parser.OPMLParser;
 
 public class PreferencesActivity extends Activity {
 	private static final String TAG = "PreferencesActivity";
+	private static final String IMPORT_FILENAME = "/sdcard/feeds.xml";
+	private static final int IMPORT_DIALOG = 1;
+	
 	public static final String USER_PREFERENCE = "USER_PREFERENCES";
 	public static final String PREF_AUTO_UPDATE = "PREF_AUTO_UPDATE";
 	public static final String PREF_UPDATE_FREQ = "PREF_UPDATE_FREQ";
@@ -48,11 +58,14 @@ public class PreferencesActivity extends Activity {
 	Spinner mUpdateFrequency;
 	SharedPreferences mPreferences;
 	
+	private Context mContext;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.prefs);
-		
+	
+		mContext = this;
 		mPreferences = getSharedPreferences(USER_PREFERENCE, Activity.MODE_PRIVATE);
 		
 		final TextView txtFreq = (TextView) findViewById(R.id.txt_freq);
@@ -60,6 +73,7 @@ public class PreferencesActivity extends Activity {
 		mUpdateFrequency = (Spinner) findViewById(R.id.frequency);
 		Button okButton = (Button) findViewById(R.id.btn_ok);
 		Button cancelButton = (Button) findViewById(R.id.btn_cancel);
+		Button importButton = (Button) findViewById(R.id.btn_greader_import);
 		
 
 		mAutoUpdate.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -104,8 +118,28 @@ public class PreferencesActivity extends Activity {
 			}
 		});
 
+		importButton.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				File f = new File(IMPORT_FILENAME);
+				if (!f.exists()) {
+					Toast.makeText(mContext, "ERROR: feeds.xml doesn't exist.", Toast.LENGTH_SHORT).show();
+					return;
+				}
+				
+				try {
+					FeedParser parser = new OPMLParser(mContext.getContentResolver());
+					parser.importFeed(f);
+				} catch (Exception e) {
+					Log.e(TAG, Log.getStackTraceString(e));
+					Toast.makeText(mContext, "An error occurred during the import", Toast.LENGTH_SHORT);
+				}
+			}
+		});
+		
 		updateUIFromPreferences();
 	}
+	
 	
 	private void savePreferences() {
 		int updateFreq = mUpdateFrequency.getSelectedItemPosition();

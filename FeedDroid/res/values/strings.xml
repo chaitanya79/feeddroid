@@ -49,11 +49,17 @@
     <string name="search_label">Search</string>
     <string name="search_hint">Enter Search Terms Here</string>
     <string name="search_results">Search results for \'<xliff:g id="string">%s</xliff:g>\': </string>
+    <string name="import_options">Import Options:</string>
+    <string name="greader_import">Import Google Reader Feeds</string>
+    <string name="import_notice">IMPORTANT: This feature requires your feeds to be contained in a 
+    	file named feeds.xml on the root of your SD card.  To export your Google Reader feeds, go to the 
+    	Reader Preferences and click on the Import/Export tab.
+    </string>
     
     <string-array name="update_freq_options">
 		<item>Every Minute</item>
 		<item>Every 15 Minutes</item>
-		<item>Every 35 Minutes</item>
+		<item>Every 30 Minutes</item>
 		<item>Every 45 Minutes</item>
 		<item>Every Hour</item>
 		<item>Every 90 Minutes</item>

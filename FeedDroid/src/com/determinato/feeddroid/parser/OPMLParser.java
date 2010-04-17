@@ -48,14 +48,16 @@ public class OPMLParser extends DefaultHandler implements FeedParser {
 	
 	private ContentResolver mResolver;
 	private ArrayList<ImportedFeed> mFeeds;
+	
 	public OPMLParser(ContentResolver resolver) {
 		mResolver = resolver;
+		mFeeds = new ArrayList<ImportedFeed>();
 	}
 
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-	
+		
 		if (localName.equals("outline")) {
 			ImportedFeed feed = new ImportedFeed();
 			feed.text = attributes.getValue("text");
@@ -73,6 +75,8 @@ public class OPMLParser extends DefaultHandler implements FeedParser {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		XMLReader reader = parser.getXMLReader();
+		reader.setContentHandler(this);
+		reader.setErrorHandler(this);
 		
 		reader.parse(new InputSource(new FileReader(opmlFile)));
 		syncDb();
