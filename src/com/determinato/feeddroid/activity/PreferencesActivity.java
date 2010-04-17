@@ -17,8 +17,6 @@ package com.determinato.feeddroid.activity;
 
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -40,10 +38,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.RemoteViews.ActionException;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.FeedParser;
 import com.determinato.feeddroid.parser.OPMLParser;
+import com.determinato.feeddroid.provider.FeedDroid;
 
 public class PreferencesActivity extends Activity {
 	private static final String TAG = "PreferencesActivity";
@@ -59,6 +59,8 @@ public class PreferencesActivity extends Activity {
 	SharedPreferences mPreferences;
 	
 	private Context mContext;
+	private boolean mIsImported;
+	private Intent mReturnIntent;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,11 @@ public class PreferencesActivity extends Activity {
 				} else
 					alarmManager.cancel(pending);
 				
-				setResult(RESULT_OK);
+				mReturnIntent = new Intent(null, FeedDroid.Channels.CONTENT_URI);
+				mReturnIntent.setData(FeedDroid.Channels.CONTENT_URI);
+				mReturnIntent.setAction(Intent.ACTION_VIEW);
+				mReturnIntent.putExtra("FEEDS_IMPORTED", mIsImported);
+				setResult(RESULT_OK, mReturnIntent);
 				finish();
 			}
 		});
@@ -112,7 +118,14 @@ public class PreferencesActivity extends Activity {
 		cancelButton.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				setResult(RESULT_CANCELED);
+				// If feeds were imported from Google Reader, we should be
+				// returning that to the calling activity regardless
+				// of if the page was cancelled or not.
+				mReturnIntent = new Intent(null, FeedDroid.Channels.CONTENT_URI);
+				mReturnIntent.setData(FeedDroid.Channels.CONTENT_URI);
+				mReturnIntent.setAction(Intent.ACTION_VIEW);
+				mReturnIntent.putExtra("FEEDS_IMPORTED", mIsImported);
+				setResult(RESULT_OK, mReturnIntent);
 				
 				finish();
 			}
@@ -130,6 +143,7 @@ public class PreferencesActivity extends Activity {
 				try {
 					FeedParser parser = new OPMLParser(mContext.getContentResolver());
 					parser.importFeed(f);
+					mIsImported = true;
 				} catch (Exception e) {
 					Log.e(TAG, Log.getStackTraceString(e));
 					Toast.makeText(mContext, "An error occurred during the import", Toast.LENGTH_SHORT);
