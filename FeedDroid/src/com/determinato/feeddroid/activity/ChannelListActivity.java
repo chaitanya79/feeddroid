@@ -357,19 +357,21 @@ public class ChannelListActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		switch(requestCode) {
-		case SHOW_PREFERENCES:
-			Log.d(TAG, "Returned from Prefs activity");
-			Log.d(TAG, "Intent data: " + getIntent().getData());
-			Log.d(TAG, "Intent action: " + getIntent().getAction());
-			mCursor = managedQuery(data.getData(), PROJECTION, null, null, null);
-	        ListAdapter adapter = new ChannelListAdapter(this, mCursor);
-	        setListAdapter(adapter);
-			
-			boolean refreshAll = data.getBooleanExtra("FEEDS_IMPORTED", false);
-			if (refreshAll)
-				refreshAllChannels();
-			break;
+		if (data != null) {
+			switch(requestCode) {
+			case SHOW_PREFERENCES:
+				Log.d(TAG, "Returned from Prefs activity");
+				Log.d(TAG, "Intent data: " + getIntent().getData());
+				Log.d(TAG, "Intent action: " + getIntent().getAction());
+				mCursor = managedQuery(data.getData(), PROJECTION, null, null, null);
+		        ListAdapter adapter = new ChannelListAdapter(this, mCursor);
+		        setListAdapter(adapter);
+				
+				boolean refreshAll = data.getBooleanExtra("FEEDS_IMPORTED", false);
+				if (refreshAll)
+					refreshAllChannels();
+				break;
+			}
 		}
 	}
 
