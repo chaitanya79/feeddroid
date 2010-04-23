@@ -46,11 +46,11 @@ public class FolderListRow extends LinearLayout {
 	public void bindView(FolderItemDao item) {
 		mBacking = item;
 		if (item instanceof FolderDao) {
-			Log.d("FolderListRow", "Folder: " + item.getTitle());
-			// TODO Folder image
+			mImage.setImageDrawable(mContext.getResources()
+					.getDrawable(R.drawable.folder));
 			mTitle.setText(((FolderDao)item).getTitle());
 			mItemType = FOLDER_VIEW;
-			mImage.setImageDrawable(null);
+			 
 			
 		} else if (item instanceof ChannelDao) {
 			Log.d("FolderListRow", "Channel: " + item.getTitle());
