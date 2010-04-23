@@ -474,6 +474,7 @@ public class FeedDroidProvider extends ContentProvider {
 		CHANNEL_LIST_PROJECTION.put(FeedDroid.Channels.URL, "url");
 		CHANNEL_LIST_PROJECTION.put(FeedDroid.Channels.ICON, "icon");
 		CHANNEL_LIST_PROJECTION.put(FeedDroid.Channels.LOGO, "logo");
+		CHANNEL_LIST_PROJECTION.put(FeedDroid.Channels.FOLDER_ID, "folder_id");
 		
 		POST_LIST_PROJECTION = new HashMap<String, String>();
 		POST_LIST_PROJECTION.put(FeedDroid.Posts._ID, "_id");
@@ -487,6 +488,7 @@ public class FeedDroidProvider extends ContentProvider {
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.STARRED, "starred");
 		
 		FOLDER_LIST_PROJECTION = new HashMap<String, String>();
+		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders._ID, "_id");
 		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders.NAME, "name");
 		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders.PARENT_ID, "parent_id");
 	}
