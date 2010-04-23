@@ -28,10 +28,6 @@
 
 		<activity android:label="@string/app_name" android:name=".activity.ChannelListActivity">
 			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>
 				<action android:name="android.intent.action.PICK"/>
 				<action android:name="android.intent.action.EDIT"/>
@@ -95,6 +91,16 @@
 			<meta-data android:name="android.app.searchable"
 				android:resource="@xml/searchable"/>
 		</activity>
+
+		<activity android:name=".activity.HomeScreenActivity"
+			android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"></action>
+				<category android:name="android.intent.category.LAUNCHER"></category>
+			</intent-filter>
+			
+		</activity>
+		
 		<service android:name=".service.FeedDroidUpdateService" />
 
 		<receiver android:name=".receivers.AlarmReceiver">
@@ -106,11 +112,12 @@
 		<meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
 		<meta-data android:name="android.app.default_searchable"
 			android:value=".activity.SearchActivity"/>
+	
 	</application>
+	
 	<uses-sdk android:minSdkVersion="4"
 		android:targetSdkVersion="7"
-		android:maxSdkVersion="7"
-		 />
+		android:maxSdkVersion="7" />
 	
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
