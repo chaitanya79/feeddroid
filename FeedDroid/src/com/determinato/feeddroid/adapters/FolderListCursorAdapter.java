@@ -1,9 +1,12 @@
 package com.determinato.feeddroid.adapters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,16 +18,19 @@ import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.view.FolderListRow;
 
 public class FolderListCursorAdapter extends BaseAdapter {
+	private static final String TAG = "FolderListCursorAdapter";
 	private Cursor mFolderCursor;
 	private Cursor mChannelCursor;
 	private Context mContext;
-	private ArrayList<FolderItemDao> rows;
+	private static ArrayList<FolderItemDao> rows;
+	
 	
 	public FolderListCursorAdapter(Context context, Cursor folderCursor, Cursor channelCursor) {
 		mFolderCursor = folderCursor;
 		mChannelCursor = channelCursor;
 		mContext = context;
 		rows = new ArrayList<FolderItemDao>();
+		
 		
 		populateRowMap();
 	}
@@ -38,10 +44,11 @@ public class FolderListCursorAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return 0;
+		return position;
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
+		
 		FolderListRow row = null;
 		
 		if (convertView == null) {
@@ -50,6 +57,7 @@ public class FolderListCursorAdapter extends BaseAdapter {
 			row = (FolderListRow) convertView;
 		
 		FolderItemDao item = rows.get(position);
+		
 		row.bindView(item);
 		return row;
 	}
@@ -57,6 +65,8 @@ public class FolderListCursorAdapter extends BaseAdapter {
 	private void populateRowMap() {
 		if (mFolderCursor.getCount() > 0) {
 			mFolderCursor.moveToFirst();
+			Log.d(TAG, DatabaseUtils.dumpCursorToString(mFolderCursor));
+			
 			do {
 				FolderDao folder = new FolderDao();
 				folder.setId(mFolderCursor.getLong(
@@ -71,6 +81,7 @@ public class FolderListCursorAdapter extends BaseAdapter {
 		
 		if (mChannelCursor.getCount() > 0) {
 			mChannelCursor.moveToFirst();
+			Log.d(TAG, DatabaseUtils.dumpCursorToString(mChannelCursor));
 			do {
 				ChannelDao channel = new ChannelDao();
 				channel.setId(mChannelCursor.getLong(
@@ -87,5 +98,6 @@ public class FolderListCursorAdapter extends BaseAdapter {
 				rows.add(channel);
 			} while (mChannelCursor.moveToNext());
 		}
+		
 	}
 }

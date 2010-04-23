@@ -16,8 +16,6 @@
 
 package com.determinato.feeddroid.activity;
 
-import java.util.HashMap;
-
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -41,15 +39,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.CursorAdapter;
-import android.widget.Filterable;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.determinato.feeddroid.R;
+import com.determinato.feeddroid.adapters.ChannelListAdapter;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.util.DownloadManager;
@@ -280,42 +276,6 @@ public class ChannelListActivity extends ListActivity {
 		builder.create().show();
 	}
 	
-	private static class ChannelListAdapter extends CursorAdapter implements Filterable {
-		private HashMap<Long, ChannelListRow> rowMap;
-		
-		
-		public ChannelListAdapter(Context ctx, Cursor c) {
-			super(ctx, c);
-			
-			rowMap = new HashMap<Long, ChannelListRow>();
-		}
-		
-		protected void updateRowMap(Cursor c, ChannelListRow row) {
-			long channelId =
-				c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
-			rowMap.put(new Long(channelId), row);
-		}
-		
-		@Override 
-		public void bindView(View v, Context ctx, Cursor c) {
-			ChannelListRow row = (ChannelListRow) v;
-			row.bindView(c);
-			updateRowMap(c, row);
-		}
-		
-		@Override
-		public View newView(Context ctx, Cursor c, ViewGroup parent) {
-			ChannelListRow row = new ChannelListRow(ctx);
-			row.bindView(c);
-			updateRowMap(c, row);
-			return row;
-		}
-		
-		public ChannelListRow getViewByRowId(long id) {
-			return rowMap.get(id);
-		}
-		
-	}
 	
 	private class RefreshRunnable implements Runnable {
 		private Handler mHandler;
