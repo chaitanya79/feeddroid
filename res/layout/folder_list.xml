@@ -42,11 +42,5 @@
 		feeddroid:backgroundColor="#000000"
 		feeddroid:primaryTextColor="#FFFFFF"
 		feeddroid:secondaryTextColor="#CCCCCC"/>  	
-  
-  	<ProgressBar
-  		android:id="@android:id/progress"
-  		style="?android:attr/progressBarStyleSmall"
-  		android:layout_width="75dip"
-  		android:layout_height="wrap_content"
-  		android:paddingRight="10dip"/>	
+
 </LinearLayout>
