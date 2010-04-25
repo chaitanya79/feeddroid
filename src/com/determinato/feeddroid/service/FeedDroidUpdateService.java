@@ -153,11 +153,6 @@ public class FeedDroidUpdateService extends Service {
 			public void run() {
 				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
 						new String[] {FeedDroid.Posts._ID}, "channel_id=" + id, null, null);
-				if (p.getCount() == 0) {
-					
-					p.close();
-					return;
-				}
 				int oldPostCount = p.getCount();
 				
 				try {
