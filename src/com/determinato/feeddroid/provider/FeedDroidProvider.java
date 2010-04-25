@@ -45,7 +45,7 @@ import com.determinato.feeddroid.R;
 public class FeedDroidProvider extends ContentProvider {
 	private static final String TAG = "FeedDroidProvider";
 	private static final String DB_NAME = "feeddroid.db";
-	private static final int DB_VERSION = 6;
+	private static final int DB_VERSION = 7;
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
 	private static HashMap<String, String> POST_LIST_PROJECTION;
@@ -73,7 +73,7 @@ public class FeedDroidProvider extends ContentProvider {
 		protected void onCreateChannels(SQLiteDatabase db) {
 			String query = "CREATE TABLE channels (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"title TEXT UNIQUE, url TEXT UNIQUE, " +
-				"icon TEXT, icon_url TEXT, logo TEXT, folder_id INTEGER(1) DEFAULT '0');";
+				"icon TEXT, icon_url TEXT, logo TEXT, folder_id INTEGER(1) DEFAULT '1');";
 			db.execSQL(query);
 			db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");			
 		}
@@ -94,6 +94,7 @@ public class FeedDroidProvider extends ContentProvider {
 			String query = "CREATE TABLE folders (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"name TEXT NOT NULL, parent_id INTEGER DEFAULT '0');";
 			db.execSQL(query);
+			db.execSQL("insert into folders(name) values('HOME');");
 		}
 		
 		@Override
@@ -108,6 +109,10 @@ public class FeedDroidProvider extends ContentProvider {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + "...");
 			
 			switch(oldVersion) {
+			case 6:
+				db.execSQL("insert into folders(name) values('HOME');");
+				db.execSQL("update channels set folder_id=1;");
+				break;
 			case 5:
 				db.beginTransaction();
 				try {

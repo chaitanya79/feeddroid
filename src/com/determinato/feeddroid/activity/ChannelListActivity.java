@@ -117,8 +117,13 @@ public class ChannelListActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.channel_list_menu, menu);
-		MenuItem addItem = menu.getItem(0);
+		MenuItem addFolderItem = menu.getItem(0);
 		Intent i = new Intent();
+		i.setData(FeedDroid.Folders.CONTENT_URI);
+		i.setAction(Intent.ACTION_INSERT);
+		addFolderItem.setIntent(i);
+		MenuItem addItem = menu.getItem(1);
+		i = new Intent();
 		i.setData(FeedDroid.Channels.CONTENT_URI);
 		i.setAction(Intent.ACTION_INSERT);
 		addItem.setIntent(i);

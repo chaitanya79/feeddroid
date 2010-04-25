@@ -17,12 +17,36 @@
  
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:feeddroid="http://schemas.android.com/apk/res/com.determinato.feeddroid"
+  android:orientation="vertical"
   android:layout_width="fill_parent"
-  android:layout_height="fill_parent">
+  android:layout_height="fill_parent"
+  android:paddingTop="2px">
   
   	<ListView android:id="@android:id/list"
   		android:layout_width="fill_parent"
-  		android:layout_height="fill_parent"/>
+  		android:layout_height="fill_parent"
+  		android:layout_weight="1"/>
   	
+  	<TextView android:id="@android:id/empty"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:text="@string/empty_folder"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:padding="24dip"/>	
   	
+  	<com.admob.android.ads.AdView
+		android:id="@+id/folder_list_ad"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		feeddroid:backgroundColor="#000000"
+		feeddroid:primaryTextColor="#FFFFFF"
+		feeddroid:secondaryTextColor="#CCCCCC"/>  	
+  
+  	<ProgressBar
+  		android:id="@android:id/progress"
+  		style="?android:attr/progressBarStyleSmall"
+  		android:layout_width="75dip"
+  		android:layout_height="wrap_content"
+  		android:paddingRight="10dip"/>	
 </LinearLayout>

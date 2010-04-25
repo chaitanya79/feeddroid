@@ -16,8 +16,6 @@
 
 package com.determinato.feeddroid.view;
 
-import com.determinato.feeddroid.provider.FeedDroid;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Canvas;
@@ -29,6 +27,8 @@ import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.determinato.feeddroid.provider.FeedDroid;
 
 public class ChannelHeader extends LinearLayout {
 	private static final int paddingTop = 2;

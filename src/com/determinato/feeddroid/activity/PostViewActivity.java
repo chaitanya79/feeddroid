@@ -252,6 +252,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		}
 	}
 	
+/*	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.removeGroup(0);
@@ -260,7 +261,7 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		inflater.inflate(R.menu.post_view_menu, menu);
 		return true;
 	}
-	
+*/	
 	private void moveTo(long id) {
 		Intent i = new Intent(Intent.ACTION_VIEW,
 				ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI, id));

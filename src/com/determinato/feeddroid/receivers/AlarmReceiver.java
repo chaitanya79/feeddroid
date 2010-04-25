@@ -15,7 +15,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "Alarm received");
-		String action = intent.getAction();
 		
 		Intent service = new Intent(context, FeedDroidUpdateService.class);
 		context.startService(service);
