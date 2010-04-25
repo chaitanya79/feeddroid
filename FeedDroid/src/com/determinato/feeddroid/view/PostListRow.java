@@ -171,18 +171,9 @@ public class PostListRow extends ViewGroup {
 			
 			Calendar then = new GregorianCalendar();
 			then.setTime(date);
-			
-			Calendar now = new GregorianCalendar();
-			
 			SimpleDateFormat fmt;
-			
 			fmt = mDateFormat;
-			/*
-			if (now.get(Calendar.DAY_OF_YEAR) == then.get(Calendar.DAY_OF_YEAR))
-				fmt = mDateFormatToday;
-			else
-				fmt = mDateFormat;
-			*/
+
 			mDate.setText(fmt.format(date));
 		} catch (ParseException e) {
 			Log.d(TAG, Log.getStackTraceString(e));

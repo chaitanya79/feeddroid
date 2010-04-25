@@ -41,10 +41,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.determinato.feeddroid.R;
@@ -81,14 +79,12 @@ public class HomeScreenActivity extends ListActivity {
 	private NotificationManager mNotificationManager;
 	private SharedPreferences mPreferences;
 	private ContentResolver mResolver;
-	private ProgressBar mProgress;
 	private FeedDroidUpdateService mServiceBinder;
 	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_PROGRESS);		
 		setContentView(R.layout.folder_list);
 		
 		mFolderCursor = managedQuery(
@@ -97,8 +93,6 @@ public class HomeScreenActivity extends ListActivity {
 		mChannelCursor = managedQuery(
 				FeedDroid.Channels.CONTENT_URI, CHANNEL_PROJECTION, "folder_id=1", null, null);
 		
-		mProgress = (ProgressBar) findViewById(android.R.id.progress);
-		mProgress.setVisibility(View.INVISIBLE);
 		adapter = new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
 		getListView().setAdapter(adapter);
 		registerForContextMenu(getListView());
@@ -126,10 +120,14 @@ public class HomeScreenActivity extends ListActivity {
 		mNotificationManager.cancel(1);
 		mFolderCursor.requery();
 		mChannelCursor.requery();
+		Intent bindIntent = new Intent(this, FeedDroidUpdateService.class);
+		bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
 		FolderListCursorAdapter adapter = new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
 		getListView().setAdapter(adapter);
 
 	}
+	
+	
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -324,4 +322,11 @@ public class HomeScreenActivity extends ListActivity {
 			mServiceBinder = null;
 		}
 	};
+
+
+	@Override
+	protected void onStop() {
+		unbindService(mConnection);
+		super.onStop();
+	}
 }
