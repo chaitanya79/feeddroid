@@ -18,6 +18,8 @@ package com.determinato.feeddroid.view;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -59,24 +61,30 @@ public class FolderListRow extends LinearLayout {
 	
 	public void bindView(FolderItemDao item) {
 		mBacking = item;
+		Typeface tf;
+		tf = Typeface.DEFAULT;
 		if (item instanceof FolderDao) {
 			mImage.setImageDrawable(mContext.getResources()
 					.getDrawable(R.drawable.folder));
 			mTitle.setText(((FolderDao)item).getTitle());
 			mItemType = FOLDER_VIEW;
-			 
+			mTitle.setTypeface(tf);
 			
 		} else if (item instanceof ChannelDao) {
-			
 			mItemType = CHANNEL_VIEW;
 			mImage.setImageDrawable(mContext.getResources()
 					.getDrawable(R.drawable.rssorange));
 			mTitle.setText(((ChannelDao) item).getTitle());
-			Integer unread = getUnreadCount((ChannelDao)item);
-			if (unread > 0)
-				mUnread.setText(unread.toString());
+			mTitle.setTypeface(tf);
 			
-
+			Integer unread = getUnreadCount((ChannelDao)item);
+			
+			if (unread > 0) {
+				mTitle.setTypeface(tf, Typeface.BOLD_ITALIC);
+				mUnread.setText(unread.toString());
+				mUnread.setTypeface(tf, Typeface.BOLD_ITALIC);
+			}
+			
 		}
 	}
 

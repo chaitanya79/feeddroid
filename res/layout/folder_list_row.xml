@@ -19,26 +19,25 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="wrap_content">
-  
-  	<ImageView android:id="@+id/folder_item_icon"
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:paddingLeft="10dip"
-  		android:layout_gravity="center_vertical"/>
-  		
-  	<TextView android:id="@+id/folder_item_title"
-  		android:layout_width="fill_parent"
-  		android:layout_height="wrap_content"
-  		android:paddingLeft="10dip"/>
-  		
-  	<LinearLayout
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:gravity="right">
   	
-  		<TextView android:id="@+id/folder_item_unread"
-  			android:layout_width="fill_parent"
-  			android:layout_height="wrap_content"
-  			android:paddingRight="10dip"/>	
-  	</LinearLayout>
+  	<ImageView android:id="@+id/folder_item_icon"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:paddingLeft="14dip"/>
+	
+	<TextView android:id="@+id/folder_item_title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:layout_gravity="center_vertical"
+		android:paddingLeft="8dip"
+		android:layout_weight="1"/>
+
+	<TextView android:id="@+id/folder_item_unread"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:paddingRight="14dip"/>
+		
 </LinearLayout>
