@@ -15,6 +15,8 @@
  */
 package com.determinato.feeddroid.service;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -26,7 +28,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -35,7 +36,6 @@ import com.determinato.feeddroid.activity.HomeScreenActivity;
 import com.determinato.feeddroid.activity.PreferencesActivity;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
-import com.determinato.feeddroid.util.DownloadManager;
 
 public class FeedDroidUpdateService extends Service {
 	private static final String TAG = "FeedDroidUpdateService";
@@ -119,6 +119,7 @@ public class FeedDroidUpdateService extends Service {
 	}
 	
 	public void updateAllChannels() {
+		ArrayList<FeedDetails> feeds = new ArrayList<FeedDetails>();
 		Cursor c = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
 				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL}, 
 				null, null, null);
@@ -129,10 +130,12 @@ public class FeedDroidUpdateService extends Service {
 			FeedDetails feed = new FeedDetails();
 			feed.id = id;
 			feed.url = url;
-			
-			new FeedUpdateTask().execute(feed);
+			feeds.add(feed);
 		} while(c.moveToNext());
+		
 		c.close();
+		
+		new AllFeedsUpdateTask().execute(feeds);
 	}
 	
 	public void updateChannel(long id, String url) {
@@ -142,19 +145,51 @@ public class FeedDroidUpdateService extends Service {
 		new FeedUpdateTask().execute(feed);
 	}
 	
-	private void parseChannelRss(final long id, final String url) {
-		Handler handler = new Handler();
-		DownloadManager manager = new DownloadManager(handler);
-		Thread t = new Thread() {
-			public void run() {
-				Log.d(TAG, "Inside update thread for channel: " + id);
+	public class ServiceBinder extends Binder {
+		public FeedDroidUpdateService getService() {
+			return FeedDroidUpdateService.this;
+		}
+	}
+	
+	private class FeedUpdateTask extends AsyncTask<FeedDetails, Void, Void> {
+		@Override
+		public Void doInBackground(FeedDetails... feeds) {
+			FeedDetails feed = feeds[0];
+			Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, new String[] {FeedDroid.Posts._ID},
+					"channel_id=" + feed.id, null, null);
+			int oldPostCount = p.getCount();
+			
+			try {
+				new RssParser(getContentResolver()).syncDb(feed.id, feed.url);
+			} catch (Exception e) {
+				Log.e(TAG, Log.getStackTraceString(e));
+			}
+			
+			if (p.requery()) {
+				int newPostCount = p.getCount();
+				if (newPostCount > oldPostCount) {
+					sendNotification();
+				}
+			}
+			p.close();
+			return null;
+		}
+	}
+	
+	
+	private class AllFeedsUpdateTask extends AsyncTask<ArrayList<FeedDetails>, Void, Void> {
+		@Override
+		public Void doInBackground(ArrayList<FeedDetails>... params) {
+			ArrayList<FeedDetails> feeds = params[0];
+			
+			for (FeedDetails feed: feeds) {
 				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
-						new String[] {FeedDroid.Posts._ID}, "channel_id=" + id, null, null);
+						new String[] {FeedDroid.Posts._ID}, "channel_id=" + feed.id, null, null);
 				
 				int oldPostCount = p.getCount();
 				
 				try {
-					new RssParser(getContentResolver()).syncDb(id, url);
+					new RssParser(getContentResolver()).syncDb(feed.id, feed.url);
 				} catch(Exception e) {
 					Log.e("RssUpdaterTask", Log.getStackTraceString(e));
 				}
@@ -167,38 +202,7 @@ public class FeedDroidUpdateService extends Service {
 				p.close();
 				
 			}
-		};
-		manager.schedule(t);
-	}
-	
-	public class ServiceBinder extends Binder {
-		public FeedDroidUpdateService getService() {
-			return FeedDroidUpdateService.this;
-		}
-	}
-	
-	private class FeedUpdateTask extends AsyncTask<FeedDetails, Void, Void> {
-		@Override
-		public Void doInBackground(FeedDetails... params) {
-			FeedDetails feed = params[0];
 						
-			Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
-					new String[] {FeedDroid.Posts._ID}, "channel_id=" + feed.id, null, null);
-			
-			int oldPostCount = p.getCount();
-			
-			try {
-				new RssParser(getContentResolver()).syncDb(feed.id, feed.url);
-			} catch(Exception e) {
-				Log.e("RssUpdaterTask", Log.getStackTraceString(e));
-			}
-			if (p.requery()) {
-				int newPostCount = p.getCount();
-				if (newPostCount > oldPostCount) {
-					sendNotification();
-				}
-			}
-			p.close();
 
 			return null;
 		}
