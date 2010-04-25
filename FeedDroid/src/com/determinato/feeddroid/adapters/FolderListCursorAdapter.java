@@ -16,12 +16,9 @@
 package com.determinato.feeddroid.adapters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -51,10 +48,13 @@ public class FolderListCursorAdapter extends BaseAdapter {
 	}
 	
 	public int getCount() {
-		return rows.size();
+		if (rows == null)
+			return 0;
+		else
+			return rows.size();
 	}
 
-	public Object getItem(int position) {
+	public FolderItemDao getItem(int position) {
 		return rows.get(position);
 	}
 
@@ -77,10 +77,19 @@ public class FolderListCursorAdapter extends BaseAdapter {
 		return row;
 	}
 
+	public void refresh() {
+		mFolderCursor.requery();
+		mChannelCursor.requery();
+	}
+	
+	public ArrayList<FolderItemDao> getRows() {
+		return rows;
+	}
+	
 	private void populateRowMap() {
 		if (mFolderCursor.getCount() > 0) {
 			mFolderCursor.moveToFirst();
-			Log.d(TAG, DatabaseUtils.dumpCursorToString(mFolderCursor));
+			
 			
 			do {
 				FolderDao folder = new FolderDao();
@@ -96,7 +105,7 @@ public class FolderListCursorAdapter extends BaseAdapter {
 		
 		if (mChannelCursor.getCount() > 0) {
 			mChannelCursor.moveToFirst();
-			Log.d(TAG, DatabaseUtils.dumpCursorToString(mChannelCursor));
+			
 			do {
 				ChannelDao channel = new ChannelDao();
 				channel.setId(mChannelCursor.getLong(

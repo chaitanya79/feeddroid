@@ -20,11 +20,14 @@
     <string name="no_posts">No posts to display.</string>
     <string name="feed_url">Feed URL:</string>
     <string name="feed_name">Feed name:</string>
+    <string name="new_folder">New Folder</string>
+    <string name="folder_name">Folder name:</string>
+    <string name="in_folder">In Folder:</string>
     <string name="new_channel">New Channel</string>
     <string name="prev_channel">Previous Channel</string>
     <string name="next_channel">Next Channel</string>
     <string name="edit_channel">Edit Channel</string>
-    <string name="remove_channel">Remove Channel</string>
+    <string name="remove_channel">Delete...</string>
     <string name="next_post">Newer Post</string>
     <string name="prev_post">Older Post</string>
     <string name="view_post">View Post</string>
@@ -55,6 +58,7 @@
     	file named feeds.xml on the root of your SD card.  To export your Google Reader feeds, go to the 
     	Reader Preferences and click on the Import/Export tab.
     </string>
+    <string name="empty_folder">Folder is empty.</string>
     
     <string-array name="update_freq_options">
 		<item>Every Minute</item>

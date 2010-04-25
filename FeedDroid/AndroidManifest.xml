@@ -46,6 +46,14 @@
 		
 		</activity>
 		
+		<activity android:name=".activity.FolderAddActivity" android:label="@string/app_name">
+			<intent-filter android:label="@string/new_folder">
+				<action android:name="android.intent.action.INSERT"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:mimeType="vnd.android.cursor.dir/vnd.feeddroid.folder"/>
+			</intent-filter>
+		</activity>
+		
 		<activity android:name=".activity.ChannelEditActivity" android:label="@string/app_name">
 			<intent-filter android:label="@string/edit_channel">
 				<action android:name="android.intent.action.EDIT"/>
@@ -99,6 +107,15 @@
 				<category android:name="android.intent.category.LAUNCHER"></category>
 			</intent-filter>
 			
+		</activity>
+		
+		<activity android:name=".activity.FolderListActivity"
+			android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:mimeType="vnd.android.cursor.item/vnd.feeddroid.folder"/>
+			</intent-filter>	
 		</activity>
 		
 		<service android:name=".service.FeedDroidUpdateService" />

@@ -47,8 +47,6 @@ import com.determinato.feeddroid.view.PostListRow;
 
 public class PostListActivity extends ListActivity {
 	private static final String TAG = "PostListActivity";
-	private static final int PREV_ID = R.id.menu_prev_channel;
-	private static final int NEXT_ID = R.id.menu_next_channel;
 	private static final int MARK_ALL_READ_ID = R.id.menu_mark_all_read;
 	
 	private static final String[] PROJECTION = new String[] {
@@ -164,6 +162,7 @@ public class PostListActivity extends ListActivity {
 			startActivity(new Intent(Intent.ACTION_VIEW, uri));
 		}
 	}
+
 	
 	@Override 
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -179,10 +178,7 @@ public class PostListActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
-		case PREV_ID:
-			return prevChannel();
-		case NEXT_ID:
-			return nextChannel();
+
 		case MARK_ALL_READ_ID:
 			markAllPostsRead();
 			break;

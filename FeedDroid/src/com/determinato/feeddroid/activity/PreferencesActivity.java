@@ -38,10 +38,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.RemoteViews.ActionException;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.FeedParser;
+import com.determinato.feeddroid.parser.GoogleReaderImporter;
 import com.determinato.feeddroid.parser.OPMLParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 
@@ -141,7 +141,7 @@ public class PreferencesActivity extends Activity {
 				}
 				
 				try {
-					FeedParser parser = new OPMLParser(mContext.getContentResolver());
+					FeedParser parser = new GoogleReaderImporter(mContext.getContentResolver());
 					parser.importFeed(f);
 					mIsImported = true;
 				} catch (Exception e) {
