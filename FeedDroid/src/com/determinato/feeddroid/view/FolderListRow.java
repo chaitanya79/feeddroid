@@ -63,12 +63,22 @@ public class FolderListRow extends LinearLayout {
 		mBacking = item;
 		Typeface tf;
 		tf = Typeface.DEFAULT;
+		Integer unread;
+		
 		if (item instanceof FolderDao) {
 			mImage.setImageDrawable(mContext.getResources()
 					.getDrawable(R.drawable.folder));
 			mTitle.setText(((FolderDao)item).getTitle());
 			mItemType = FOLDER_VIEW;
 			mTitle.setTypeface(tf);
+			
+			unread = getFolderUnreadCount(item.getId());
+			
+			if (unread > 0) {
+				mTitle.setTypeface(tf, Typeface.BOLD_ITALIC);
+				mUnread.setText(unread.toString());
+				mUnread.setTypeface(tf, Typeface.BOLD_ITALIC);
+			}
 			
 		} else if (item instanceof ChannelDao) {
 			mItemType = CHANNEL_VIEW;
@@ -77,7 +87,7 @@ public class FolderListRow extends LinearLayout {
 			mTitle.setText(((ChannelDao) item).getTitle());
 			mTitle.setTypeface(tf);
 			
-			Integer unread = getUnreadCount((ChannelDao)item);
+			unread = getChannelUnreadCount(item.getId());
 			
 			if (unread > 0) {
 				mTitle.setTypeface(tf, Typeface.BOLD_ITALIC);
@@ -100,12 +110,26 @@ public class FolderListRow extends LinearLayout {
 		return mItemType;
 	}
 	
-	private int getUnreadCount(ChannelDao item) {
+	private int getChannelUnreadCount(long channelId) {
 		ContentResolver resolver = mContext.getContentResolver();
-		long channelId = item.getId();
 		Cursor c = resolver.query(FeedDroid.Posts.CONTENT_URI, null, "channel_id=" + channelId + 
 				" and read=0", null, null);
 		int count = c.getCount();
+		c.close();
+		return count;
+	}
+	
+	private int getFolderUnreadCount(long folderId) {
+		int count = 0;
+		ContentResolver resolver = mContext.getContentResolver();
+		Cursor c = resolver.query(FeedDroid.Channels.CONTENT_URI, new String[] {FeedDroid.Channels._ID}, 
+				"folder_id=" + folderId, null, null);
+		if (c.getCount() > 0) {
+			c.moveToFirst();
+			do {
+				count += getChannelUnreadCount(c.getLong(c.getColumnIndex(FeedDroid.Channels._ID)));
+			} while (c.moveToNext());
+		}
 		c.close();
 		return count;
 	}
