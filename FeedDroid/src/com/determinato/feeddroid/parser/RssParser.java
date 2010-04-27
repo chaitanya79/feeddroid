@@ -257,17 +257,17 @@ public class RssParser extends DefaultHandler {
 		
 		if ((mState & STATE_IN_ITEM) == 0)
 			return;
-		StringBuffer str = new StringBuffer();
+		StringBuilder str = new StringBuilder();
 		switch(mState) {
 		case STATE_IN_ITEM | STATE_IN_ITEM_TITLE:
-			str.append(new String(ch, start, length));
+			str.append(new String(ch, start, length).trim());
 			if (mPostBuf.title == null)
 				mPostBuf.title = str.toString();
 			else
 				mPostBuf.title += str.toString();
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_DESC:
-			str.append(new String(ch, start, length));
+			str.append(new String(ch, start, length).trim());
 			if (mPostBuf.desc == null)
 				mPostBuf.desc = str.toString();
 			else
@@ -275,13 +275,13 @@ public class RssParser extends DefaultHandler {
 			
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_LINK:
-			mPostBuf.link = new String(ch, start, length);
+			mPostBuf.link = new String(ch, start, length).trim();
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_DATE:
-			mPostBuf.setDate(new String(ch, start, length));
+			mPostBuf.setDate(new String(ch, start, length).trim());
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_AUTHOR:
-			mPostBuf.author = new String(ch, start, length);
+			mPostBuf.author = new String(ch, start, length).trim();
 			break;
 		default:
 		}
