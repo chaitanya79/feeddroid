@@ -139,13 +139,7 @@ public class FeedDroidUpdateService extends Service {
 			return FeedDroidUpdateService.this;
 		}
 	}
-	
 
-	private class FeedDetails {
-		public long id;
-		public String url;
-	}
-	
 	private void parseChannelRss(final long id, final String url) {
 		Handler handler = new Handler();
 		DownloadManager manager = new DownloadManager(handler);
