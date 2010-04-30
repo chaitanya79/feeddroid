@@ -196,6 +196,9 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		String body = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.BODY));
 		String url = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.URL));
 		
+		if (body == null) 
+			body = "";
+		
 		if (!hasMoreLink(body, url))
 			body += "<p><a href=\"" + url + "\">Read more...</a></p>";
 
@@ -205,8 +208,8 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	
 	private boolean hasMoreLink(String body, String url) {
 		int urlPos;
-		
-		if ((urlPos = body.indexOf(url)) <= 0)
+
+		if ((body == null) || (urlPos = body.indexOf(url)) <= 0)
 			return false;
 		
 		try {
