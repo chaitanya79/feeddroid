@@ -47,7 +47,9 @@ import com.determinato.feeddroid.provider.FeedDroid;
 
 public class PreferencesActivity extends Activity {
 	private static final String TAG = "PreferencesActivity";
-	private static final String IMPORT_FILENAME = "/sdcard/feeds.xml";
+	private static final String ONBOARD_STORAGE_DIR = "/emmc/";
+	private static final String SDCARD_DIR = "/sdcard/";
+	private static final String IMPORT_FILENAME = "feeds.xml";
 	private static final int IMPORT_DIALOG = 1;
 	
 	public static final String USER_PREFERENCE = "USER_PREFERENCES";
@@ -134,10 +136,17 @@ public class PreferencesActivity extends Activity {
 		importButton.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				File f = new File(IMPORT_FILENAME);
+				// Check both onboard storage (for devices like HTC Incredible)
+				// and SD card for the import file.
+				String filename = ONBOARD_STORAGE_DIR + IMPORT_FILENAME;
+				File f = new File(filename);
 				if (!f.exists()) {
-					Toast.makeText(mContext, "ERROR: feeds.xml doesn't exist.", Toast.LENGTH_SHORT).show();
-					return;
+					filename = SDCARD_DIR + IMPORT_FILENAME;
+					f = new File(filename);
+					if (!f.exists()) {
+						Toast.makeText(mContext, "ERROR: feeds.xml doesn't exist.", Toast.LENGTH_SHORT).show();
+						return;
+					}
 				}
 				
 				try {
