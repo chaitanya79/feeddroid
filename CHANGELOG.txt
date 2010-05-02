@@ -1,0 +1,21 @@
+1.0 RC 1
+--------
+
+412984c - Updated version to RC1
+e53cc5f - Fixed gh-3.  Channels with no unread posts no longer display unread counts from other channels.
+0532b7f - version increment for onboard storage addition
+956cb25 - added support for devices with onboard storage (HTC Incredible) to Google Reader import
+82f53f4 - Cleaned things up a bit, got rid of unneeded links.
+52135f1 - Merge branch 'gh-pages' of git+ssh://github.com/determinato/feeddroid into development
+1354a69 - version increment for bug fix release
+1b741bf - Fixed force close when trying to load post with no body.
+17ac5a5 - removed unnecessary method
+2dd250d - increment version
+407deb5 - more icon resizing
+1e914e0 - resized icons for HDPI and LDPI.
+6b93ff4 - changed background on folder icons to transparent.
+0bfcac6 - Up app version number for release
+020bbba - Added unread count to folders.
+a2fa3ab - added trim() to some of the String creations in the parser.
+
+
