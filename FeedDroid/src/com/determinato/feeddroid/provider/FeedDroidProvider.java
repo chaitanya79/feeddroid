@@ -60,6 +60,7 @@ public class FeedDroidProvider extends ContentProvider {
 	private static final int CHANNELICON_ID = 6;
 	private static final int FOLDERS = 7;
 	private static final int FOLDER_ID = 8;
+	private static final int UNREAD = 9;
 	
 	private static final UriMatcher URL_MATCHER;
 	
@@ -205,6 +206,8 @@ public class FeedDroidProvider extends ContentProvider {
 			return "vnd.android.cursor.dir/vnd.feeddroid.folder";
 		case FOLDER_ID:
 			return "vnd.android.cursor.item/vnd.feeddroid.folder";
+		case UNREAD:
+			return "vnd.android.cursor.item/vnd.feeddroid.post";
 		default:
 			throw new IllegalArgumentException("Unknown URL: " + uri);
 		}
@@ -403,6 +406,11 @@ public class FeedDroidProvider extends ContentProvider {
 			qb.appendWhere("_id=" + uri.getPathSegments().get(1));
 			break;
 			
+		case UNREAD:
+			qb.setTables("posts");
+			qb.appendWhere("channel_id=" + uri.getPathSegments().get(1) + " and read=0");
+			break;
+			
 		default:
 			throw new IllegalArgumentException("Unknown URL: " + uri);
 		}
@@ -472,6 +480,7 @@ public class FeedDroidProvider extends ContentProvider {
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "postlist/#", CHANNEL_POSTS);
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "folders", FOLDERS);
 		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "folders/#", FOLDER_ID);
+		URL_MATCHER.addURI(FeedDroid.AUTHORITY, "unread/#", UNREAD);
 		
 		CHANNEL_LIST_PROJECTION = new HashMap<String, String>();
 		CHANNEL_LIST_PROJECTION.put(FeedDroid.Channels._ID, "_id");

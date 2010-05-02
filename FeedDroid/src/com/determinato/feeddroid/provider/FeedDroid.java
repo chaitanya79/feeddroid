@@ -41,6 +41,8 @@ public class FeedDroid {
 			Uri.parse("content://" + AUTHORITY + "/posts");
 		public static final Uri CONTENT_URI_LIST =
 			Uri.parse("content://" + AUTHORITY + "/postlist");
+		public static final Uri CONTENT_LIST_UNREAD =
+			Uri.parse("content://" + AUTHORITY + "/unread");
 		
 		public static final String DEFAULT_SORT_ORDER = "posted_on DESC";
 		

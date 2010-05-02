@@ -16,6 +16,7 @@
 package com.determinato.feeddroid.view;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -86,6 +87,7 @@ public class FolderListRow extends LinearLayout {
 					.getDrawable(R.drawable.rssorange));
 			mTitle.setText(((ChannelDao) item).getTitle());
 			mTitle.setTypeface(tf);
+			mUnread.setText("");
 			
 			unread = getChannelUnreadCount(item.getId());
 			
@@ -112,8 +114,8 @@ public class FolderListRow extends LinearLayout {
 	
 	private int getChannelUnreadCount(long channelId) {
 		ContentResolver resolver = mContext.getContentResolver();
-		Cursor c = resolver.query(FeedDroid.Posts.CONTENT_URI, null, "channel_id=" + channelId + 
-				" and read=0", null, null);
+		Cursor c = resolver.query(ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_LIST_UNREAD, channelId), 
+				new String[] {FeedDroid.Posts._ID}, null, null, null);
 		int count = c.getCount();
 		c.close();
 		return count;
