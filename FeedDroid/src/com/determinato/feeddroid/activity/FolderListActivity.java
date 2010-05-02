@@ -70,4 +70,14 @@ public class FolderListActivity extends ListActivity {
 		}
 		
 	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		mFolderCursor.requery();
+		mChannelCursor.requery();
+		FolderListCursorAdapter adapter = new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
+		getListView().setAdapter(adapter);
+
+	}
 }
