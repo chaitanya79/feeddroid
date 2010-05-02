@@ -46,7 +46,7 @@ import com.determinato.feeddroid.util.KeyUtils;
 import com.determinato.feeddroid.util.GestureFilter.SimpleGestureListener;
 import com.determinato.feeddroid.view.ChannelHeader;
 
-public class PostViewActivity extends Activity implements SimpleGestureListener {
+public class PostViewActivity extends Activity {
 	private static final String TAG = "PostView";
 	
 	private static final int NEXT_POST_ID = Menu.FIRST;
@@ -64,8 +64,6 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 	
 	private long mPrevPostId = -1;
 	private long mNextPostId = -1;
-	private GestureLibrary mLibrary;
-	private GestureFilter mDetector;
 	private TextView mTxtStarred;
 	private ContentResolver mResolver;
 	private ImageButton mStarred;
@@ -107,16 +105,6 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 		
 		mChannelId = mCursor.getLong(mCursor.getColumnIndex(FeedDroid.Posts.CHANNEL_ID));
 		mPostId = Long.parseLong(uri.getPathSegments().get(1));
-		mDetector = new GestureFilter(this, this);
-		mDetector.setEnabled(true);
-		mDetector.setMode(GestureFilter.MODE_DYNAMIC);
-		mLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
-		if (!mLibrary.load()) {
-			Log.e(TAG, "Unable to load gestures library.  Application cannot continue");
-			finish();
-		}
-
-
 		initWithData();
 		
 	}
@@ -318,16 +306,6 @@ public class PostViewActivity extends Activity implements SimpleGestureListener 
 			finish();
 		}
 		return false;
-	}
-
-	public void onDoubleTap() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onSwipe(int direction) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
