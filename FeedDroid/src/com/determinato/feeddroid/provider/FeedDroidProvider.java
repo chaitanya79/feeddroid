@@ -282,20 +282,35 @@ public class FeedDroidProvider extends ContentProvider {
 		if (values.containsKey(FeedDroid.Channels.TITLE) == false)
 			values.put(FeedDroid.Channels.TITLE, r.getString(android.R.string.untitled));
 		
-		long id = mDb.insert("channels", "title", values);
+		long folderId = values.getAsLong(FeedDroid.Channels.FOLDER_ID);
 		
+		long id = -1;
 		
-		if (values.containsKey(FeedDroid.Channels.ICON) == false) {
-			Uri iconUri;
+		mDb.beginTransaction();
+		try {
+			id = mDb.insert("channels", "title", values);
 			
-			iconUri = FeedDroid.Channels.CONTENT_URI.buildUpon()
-				.appendPath(String.valueOf(id))
-				.appendPath("icon")
-				.build();
 			
-			ContentValues update = new ContentValues();
-			update.put(FeedDroid.Channels.ICON, iconUri.toString());
-			mDb.update("channels", update, "_id=" + id, null);
+			if (values.containsKey(FeedDroid.Channels.ICON) == false) {
+				Uri iconUri;
+				
+				iconUri = FeedDroid.Channels.CONTENT_URI.buildUpon()
+					.appendPath(String.valueOf(id))
+					.appendPath("icon")
+					.build();
+				
+				ContentValues update = new ContentValues();
+				update.put(FeedDroid.Channels.ICON, iconUri.toString());
+				mDb.update("channels", update, "_id=" + id, null);
+				
+				update = new ContentValues();
+				update.put(FeedDroid.Channels.FOLDER_ID, folderId);
+				mDb.update("channels", update, "_id=" + id, null);
+				
+				mDb.setTransactionSuccessful();
+			}			
+		} finally {
+			mDb.endTransaction();
 		}
 		
 		return id;

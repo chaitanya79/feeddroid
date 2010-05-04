@@ -63,7 +63,9 @@ public class HomeScreenActivity extends ListActivity {
 		FeedDroid.Channels._ID, FeedDroid.Channels.TITLE, FeedDroid.Channels.URL,
 		FeedDroid.Channels.ICON, FeedDroid.Channels.FOLDER_ID
 	};
-	
+
+	public static final int ADD_CHANNEL_ID = R.id.menu_new_channel;
+	public static final int ADD_FOLDER_ID = R.id.menu_new_folder;
 	public static final int DELETE_ID = R.id.remove_channel;
 	public static final int REFRESH_ID = Menu.FIRST + 2;
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
@@ -166,16 +168,8 @@ public class HomeScreenActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.channel_list_menu, menu);
-		MenuItem addFolderItem = menu.getItem(0);
-		Intent i = new Intent();
-		i.setData(FeedDroid.Folders.CONTENT_URI);
-		i.setAction(Intent.ACTION_INSERT);
-		addFolderItem.setIntent(i);
-		MenuItem addChannelItem = menu.getItem(1);
-		i = new Intent();
-		i.setData(FeedDroid.Channels.CONTENT_URI);
-		addChannelItem.setIntent(i);
-		menu.add(addFolderItem.getGroupId(), SHOW_PREFERENCES, Menu.NONE, getString(R.string.prefs))
+
+		menu.add(0, SHOW_PREFERENCES, Menu.NONE, getString(R.string.prefs))
 		.setIcon(android.R.drawable.ic_menu_preferences);
 		
 		MenuItem searchItem = menu.findItem(R.id.menu_search);
@@ -192,6 +186,19 @@ public class HomeScreenActivity extends ListActivity {
 		
 		
 		switch(item.getItemId()) {
+		case ADD_FOLDER_ID:
+			i = new Intent(this, FolderAddActivity.class);
+			i.setAction(Intent.ACTION_INSERT);
+			i.setData(Uri.parse("vnd.android.cursor.dir/vnd.feeddroid.folder"));
+			startActivityForResult(i, RESULT_OK);
+			return true;
+		case ADD_CHANNEL_ID:
+			i = new Intent(this, ChannelAddActivity.class);
+			i.setAction(Intent.ACTION_INSERT);
+			i.setData(Uri.parse("vnd.android.cursor.dir/vnd.feeddroid.channel"));
+			i.putExtra("folderId", 1L);
+			startActivityForResult(i, RESULT_OK);
+			return true;
 		case REFRESH_ALL_ID:
 			updateAllChannels();
 			return true;
@@ -212,7 +219,13 @@ public class HomeScreenActivity extends ListActivity {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.channel_list_context_menu, menu);
-		
+	
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		FolderItemDao backing = ((FolderListRow) info.targetView).getBacking();
+		if (backing instanceof FolderDao) {
+			MenuItem item = menu.findItem(EDIT_ID);
+			item.setVisible(false);
+		}
 	}
 	
 	@Override

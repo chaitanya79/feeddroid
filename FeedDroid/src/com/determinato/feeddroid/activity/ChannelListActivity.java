@@ -57,6 +57,7 @@ public class ChannelListActivity extends ListActivity {
 	public static final String TAG = "ChannelListActivity";
 	public static final String TAG_PREFS = "FeedDroid";
 	
+	public static final int ADD_CHANNEL_ID = R.id.menu_new_channel;
 	public static final int DELETE_ID = R.id.remove_channel;
 	public static final int REFRESH_ID = Menu.FIRST + 2;
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
@@ -117,17 +118,14 @@ public class ChannelListActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.channel_list_menu, menu);
+		
 		MenuItem addFolderItem = menu.getItem(0);
 		Intent i = new Intent();
 		i.setData(FeedDroid.Folders.CONTENT_URI);
 		i.setAction(Intent.ACTION_INSERT);
 		addFolderItem.setIntent(i);
-		MenuItem addItem = menu.getItem(1);
-		i = new Intent();
-		i.setData(FeedDroid.Channels.CONTENT_URI);
-		i.setAction(Intent.ACTION_INSERT);
-		addItem.setIntent(i);
-		menu.add(addItem.getGroupId(), SHOW_PREFERENCES, Menu.NONE, getString(R.string.prefs))
+
+		menu.add(0, SHOW_PREFERENCES, Menu.NONE, getString(R.string.prefs))
 		.setIcon(android.R.drawable.ic_menu_preferences);
 		
 		MenuItem searchItem = menu.findItem(R.id.menu_search);
@@ -207,8 +205,14 @@ public class ChannelListActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent i;
 		
-		Log.d(TAG, "menu item pressed: " + item.getItemId());
+		
 		switch(item.getItemId()) {
+		case ADD_CHANNEL_ID:
+			i = new Intent(this, ChannelAddActivity.class);
+			i.setAction(Intent.ACTION_INSERT);
+			i.setData(Uri.parse("vnd.android.cursor.dir/vnd.feeddroid.channel"));
+			startActivityForResult(i, RESULT_OK);
+			return true;
 		case REFRESH_ALL_ID:
 			refreshAllChannels();
 			return true;

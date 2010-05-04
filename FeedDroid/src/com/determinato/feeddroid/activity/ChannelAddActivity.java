@@ -40,6 +40,7 @@ import com.determinato.feeddroid.provider.FeedDroid;
 public class ChannelAddActivity extends Activity {
 	private static final String TAG = "ChannelAdd";
 	
+	private long mFolderId;
 	private EditText mUrl;
 	private Context mContext = this;
 	protected ProgressDialog mBusy;
@@ -51,6 +52,7 @@ public class ChannelAddActivity extends Activity {
 		setContentView(R.layout.channel_add);
 		
 		mUrl = (EditText) findViewById(R.id.url);
+		mFolderId = getIntent().getExtras().getLong("folderId");
 		
 		Button add = (Button) findViewById(R.id.add);
 		add.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +100,7 @@ public class ChannelAddActivity extends Activity {
 					
 					RssParser refresh = new RssParser(getContentResolver());
 					
-					final long id = refresh.syncDb(null, -1, url);
+					final long id = refresh.syncDb(-1, mFolderId, url);
 					
 					if (id >= 0) {
 						URL iconUrl = getDefaultFavicon(url);

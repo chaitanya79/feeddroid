@@ -52,6 +52,7 @@ public class RssParser extends DefaultHandler {
 	
 	private Handler mHandler;
 	private long mId;
+	private long mFolderId;
 	private String mRssUrl;
 	
 	private ContentResolver mResolver;
@@ -78,10 +79,12 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("title", STATE_IN_ITEM_TITLE);
 		mStateMap.put("link", STATE_IN_ITEM_LINK);
 		mStateMap.put("description", STATE_IN_ITEM_DESC);
+		mStateMap.put("summary", STATE_IN_ITEM_DESC);
 		mStateMap.put("content", STATE_IN_ITEM_DESC);
 		mStateMap.put("content:encoded", STATE_IN_ITEM_DESC);
 		mStateMap.put("dc:date", STATE_IN_ITEM_DATE);
 		mStateMap.put("updated", STATE_IN_ITEM_DATE);
+		mStateMap.put("modified", STATE_IN_ITEM_DATE);
 		mStateMap.put("pubDate", STATE_IN_ITEM_DATE);
 		mStateMap.put("dc:author", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("author", STATE_IN_ITEM_AUTHOR);
@@ -99,11 +102,17 @@ public class RssParser extends DefaultHandler {
 		return syncDb(id, rssurl);
 	}
 	
-	public long syncDb(long id, String rssurl) 
+	public long syncDb(long id, String rssurl) throws Exception {
+		long folderId = 1;
+		return syncDb(id, folderId, rssurl);
+	}
+	
+	public long syncDb(long id, long folderId, String rssurl) 
 		throws Exception {
 		Log.d(TAG, "Parsing RSS...");
 		
 		mId = id;
+		mFolderId = folderId;
 		mRssUrl = rssurl;
 		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -122,6 +131,7 @@ public class RssParser extends DefaultHandler {
 		try {
 			reader.parse(new InputSource(c.getInputStream()));
 		} catch (NullPointerException e) {
+			Log.e(TAG, Log.getStackTraceString(e));
 			Log.e(TAG, "Failed to load URL");
 		}
 		
@@ -229,6 +239,8 @@ public class RssParser extends DefaultHandler {
 					values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
 					values.put(FeedDroid.Posts.BODY, mPostBuf.desc);
 					
+					
+					Log.d(TAG, "Preparing to insert");
 					mResolver.insert(FeedDroid.Posts.CONTENT_URI, values);
 				}
 				
@@ -245,6 +257,7 @@ public class RssParser extends DefaultHandler {
 			
 			values.put(FeedDroid.Channels.TITLE, new String(ch, start, length));
 			values.put(FeedDroid.Channels.URL, mRssUrl);
+			values.put(FeedDroid.Channels.FOLDER_ID, mFolderId);
 			
 			Uri added = mResolver.insert(FeedDroid.Channels.CONTENT_URI, values);
 			
