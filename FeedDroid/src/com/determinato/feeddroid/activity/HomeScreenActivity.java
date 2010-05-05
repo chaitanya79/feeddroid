@@ -95,8 +95,6 @@ public class HomeScreenActivity extends ListActivity {
 		mChannelCursor = managedQuery(
 				FeedDroid.Channels.CONTENT_URI, CHANNEL_PROJECTION, "folder_id=1", null, null);
 		
-		adapter = new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
-		getListView().setAdapter(adapter);
 		registerForContextMenu(getListView());
 		mResolver = getContentResolver();
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -110,10 +108,6 @@ public class HomeScreenActivity extends ListActivity {
         	Log.d(TAG, "update in " + time / 1000 + " seconds.");
         	alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + time, time, pending);
         }
-
-        // Bind to the update service
-        Intent bindIntent = new Intent(this, FeedDroidUpdateService.class);
-        bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -122,8 +116,10 @@ public class HomeScreenActivity extends ListActivity {
 		mNotificationManager.cancel(1);
 		mFolderCursor.requery();
 		mChannelCursor.requery();
+		
 		Intent bindIntent = new Intent(this, FeedDroidUpdateService.class);
 		bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
+		
 		FolderListCursorAdapter adapter = new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
 		getListView().setAdapter(adapter);
 

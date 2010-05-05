@@ -45,6 +45,7 @@ public class FeedDroidUpdateService extends Service {
 	private PendingIntent mPending;
 	private AlarmManager mAlarmManager;
 	private ServiceBinder mBinder = new ServiceBinder();
+	private Cursor c;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -57,6 +58,9 @@ public class FeedDroidUpdateService extends Service {
 		Intent intent = new Intent(ALARM_ACTION);
 		mPending = PendingIntent.getBroadcast(this, 0, intent, 0);
 		mPreferences = getSharedPreferences(PreferencesActivity.USER_PREFERENCE, Activity.MODE_PRIVATE);
+		c = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
+				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL}, null, null, null);
+		
 	}
 	
 	// Pre-2.0
@@ -75,9 +79,7 @@ public class FeedDroidUpdateService extends Service {
 
 	void doStart(Intent intent, int startId) {
 		Log.d(TAG, "Update serivce started");
-		Cursor c = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
-				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL}, null, null, null);
-		
+		c.requery();
 		if (c.getCount() == 0) {
 			c.close();
 			return;
@@ -115,9 +117,7 @@ public class FeedDroidUpdateService extends Service {
 	}
 	
 	public void updateAllChannels() {
-		Cursor c = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
-				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL}, 
-				null, null, null);
+		c.requery();
 		c.moveToFirst();
 		do {
 			long id = c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));

@@ -16,8 +16,10 @@
 
 package com.determinato.feeddroid.parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -129,7 +131,8 @@ public class RssParser extends DefaultHandler {
 		c.setRequestProperty("User-Agent", "Android/m3-rc37a");
 		
 		try {
-			reader.parse(new InputSource(c.getInputStream()));
+			BufferedReader bufReader = new BufferedReader(new InputStreamReader(c.getInputStream()));
+			reader.parse(new InputSource(bufReader));
 		} catch (NullPointerException e) {
 			Log.e(TAG, Log.getStackTraceString(e));
 			Log.e(TAG, "Failed to load URL");
