@@ -43,6 +43,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -111,8 +112,6 @@ public class RssParser extends DefaultHandler {
 	
 	public long syncDb(long id, long folderId, String rssurl) 
 		throws Exception {
-		Log.d(TAG, "Parsing RSS...");
-		
 		mId = id;
 		mFolderId = folderId;
 		mRssUrl = rssurl;
@@ -131,7 +130,7 @@ public class RssParser extends DefaultHandler {
 		c.setRequestProperty("User-Agent", "Android/m3-rc37a");
 		
 		try {
-			BufferedReader bufReader = new BufferedReader(new InputStreamReader(c.getInputStream()));
+			BufferedReader bufReader = new BufferedReader(new InputStreamReader(c.getInputStream()), 65535);
 			reader.parse(new InputSource(bufReader));
 		} catch (NullPointerException e) {
 			Log.e(TAG, Log.getStackTraceString(e));
@@ -223,31 +222,21 @@ public class RssParser extends DefaultHandler {
 					Log.d(TAG, "</item> found before feed title.");
 					return;
 				}
-				
-				
-				String[] dupProj = new String[] {FeedDroid.Posts._ID};
-				Uri listUri =
-					ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI_LIST, mId);
-				
-				Cursor dup = mResolver.query(listUri, dupProj, "title = ? AND url = ?",
-						new String[] {mPostBuf.title, mPostBuf.link}, null);
-				
-				if (dup.getCount() == 0) {
-					ContentValues values = new ContentValues();
+
+				ContentValues values = new ContentValues();
 					
-					values.put(FeedDroid.Posts.CHANNEL_ID, mId);
-					values.put(FeedDroid.Posts.TITLE, mPostBuf.title);
-					values.put(FeedDroid.Posts.URL, mPostBuf.link);
-					values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
-					values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
-					values.put(FeedDroid.Posts.BODY, mPostBuf.desc);
+				values.put(FeedDroid.Posts.CHANNEL_ID, mId);
+				values.put(FeedDroid.Posts.TITLE, mPostBuf.title);
+				values.put(FeedDroid.Posts.URL, mPostBuf.link);
+				values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
+				values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
+				values.put(FeedDroid.Posts.BODY, mPostBuf.desc);
 					
-					
-					Log.d(TAG, "Preparing to insert");
+				try {
 					mResolver.insert(FeedDroid.Posts.CONTENT_URI, values);
+				} catch (SQLException e) {
+					// Eating the exception since it's likely due to a duplicate post.
 				}
-				
-				dup.close();
 			}
 		}
 	}

@@ -31,6 +31,7 @@ import android.content.UriMatcher;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -317,7 +318,25 @@ public class FeedDroidProvider extends ContentProvider {
 	}
 	
 	private long insertPosts(ContentValues values) {
-		return mDb.insert("posts", "title", values);
+		long id = -1;
+		try {
+			if (!checkForDuplicatePost(values.getAsString("url")))
+				mDb.insert("posts", "title", values);
+		} catch (SQLiteConstraintException e) {
+			// Eating this exception
+		}
+		return id;
+	}
+	
+	private boolean checkForDuplicatePost(String url) {
+		boolean dup = false;
+		String[] projection = {FeedDroid.Posts._ID};
+		Cursor c = mDb.query("posts", projection, "url=" + url, 
+				null, null, null, null);
+		if (c.getCount() > 0)
+			dup = true;
+		c.close();
+		return dup;
 	}
 	
 	private long insertFolders(ContentValues values) {
