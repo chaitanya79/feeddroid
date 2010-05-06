@@ -1,3 +1,19 @@
+1.0 RC 2
+--------
+
+a950810 - Increased buffer size for XML reader to help improve parser performance
+60d3d68 - Converted if block to more efficient switch in insert method
+7d7f43f - Attempting to address performance issues with GC during RSS parsing
+ce7f86b - Cleaning up some of the parsing code to try and improve performance and get rid of wait timer
+996f1e3 - Merge branch 'master' of git+ssh://github.com/determinato/feeddroid
+ae5401b - Added menu to FolderListActivity to be able to add channels/folders from that view
+8b1a064 - re-enabled onResume() method in FolderListActivity because post counts were not updating correctly after reading posts.
+05ce234 - Added .settings directory (local eclipse dir, not needed in Git) to .gitignore
+9d1774c - Re-enabling support for Android 1.5. :)
+6f73f70 - Added changelog.
+
+
+
 1.0 RC 1
 --------
 
