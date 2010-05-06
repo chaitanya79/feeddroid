@@ -106,12 +106,15 @@ public class FeedDroidUpdateService extends Service {
 		String tickerTxt = getString(R.string.updates_available);
 		String titleTxt = getString(R.string.app_name);
 		Notification notification = new Notification(icon, tickerTxt, System.currentTimeMillis());
+		
 		notification.ledOffMS = 0;
 		notification.ledOnMS = 1;
 		notification.flags |= Notification.FLAG_SHOW_LIGHTS;
 		notification.flags |= Notification.DEFAULT_SOUND;
+		
 		Intent appIntent = new Intent(getApplicationContext(), HomeScreenActivity.class);
 		PendingIntent pending = PendingIntent.getActivity(getApplicationContext(), 0, appIntent, 0);
+		
 		notification.setLatestEventInfo(getApplicationContext(), titleTxt, tickerTxt, pending);
 		mNotificationMgr.notify(1, notification);
 	}
@@ -140,31 +143,34 @@ public class FeedDroidUpdateService extends Service {
 		}
 	}
 
-	private void parseChannelRss(final long id, final String url) {
-		Handler handler = new Handler();
-		DownloadManager manager = new DownloadManager(handler);
-		Thread t = new Thread() {
+	private void parseChannelRss(long id, String url) {
+		Thread t = new Thread(null, doParse(id, url), "Parse RSS"); 
+		t.start();
+	}
+
+	private Runnable doParse(final long id, final String url) {
+		Runnable parseRssThread = new Runnable() {
 			public void run() {
 				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
 						new String[] {FeedDroid.Posts._ID}, "channel_id=" + id, null, null);
 				int oldPostCount = p.getCount();
-				
+
 				try {
 					new RssParser(getContentResolver()).syncDb(id, url);
+					if (p.requery()) {
+						int newPostCount = p.getCount();
+						if (newPostCount > oldPostCount) {
+							sendNotification();
+						}
+					}
 				} catch(Exception e) {
 					Log.e("RssUpdaterTask", Log.getStackTraceString(e));
+				} finally {
+					p.close();
 				}
-				if (p.requery()) {
-					int newPostCount = p.getCount();
-					if (newPostCount > oldPostCount) {
-						sendNotification();
-					}
-				}
-				p.close();
-				
-			}
+			};
 		};
-		manager.schedule(t);
+		
+		return parseRssThread;
 	}
-
 }
