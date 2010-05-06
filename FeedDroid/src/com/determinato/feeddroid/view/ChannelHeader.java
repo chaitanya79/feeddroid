@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
 
 public class ChannelHeader extends LinearLayout {
@@ -85,9 +86,10 @@ public class ChannelHeader extends LinearLayout {
 	public void setLogo(String channelName, String iconData, String logoData) {
 		if (mIcon == null) {
 			mIcon = new ImageView(getContext());
+			mIcon.setImageDrawable(getResources().getDrawable(R.drawable.rss_status_bar));
 			mIcon.setPadding(10, paddingTop, 0, paddingBottom);
 			
-			LayoutParams iconRules = new LayoutParams(16 + 10, 16 + paddingTop + paddingBottom);
+			LayoutParams iconRules = new LayoutParams(40,40);
 			iconRules.gravity = Gravity.CENTER_VERTICAL;
 			addView(mIcon, iconRules);
 		}
@@ -96,6 +98,7 @@ public class ChannelHeader extends LinearLayout {
 			mLogoText = new TextView(getContext());
 			mLogoText.setPadding(6, paddingTop, 0, paddingBottom);
 			mLogoText.setTypeface(Typeface.DEFAULT_BOLD);
+			mLogoText.setTextSize(16.0f);
 			mLogoText.setMaxLines(1);
 			addView(mLogoText, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
 		}
