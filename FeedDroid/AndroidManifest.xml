@@ -15,7 +15,7 @@
    limitations under the License.
  -->
  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.determinato.feeddroid" android:versionName="1.0 Release Candidate 2" android:versionCode="26">
+	package="com.determinato.feeddroid" android:versionName="1.0 Release Candidate 2" android:versionCode="27">
 
 	<supports-screens android:smallScreens="false"
 		android:normalScreens="true"

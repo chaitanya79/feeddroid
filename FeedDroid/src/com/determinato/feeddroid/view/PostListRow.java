@@ -72,6 +72,7 @@ public class PostListRow extends ViewGroup {
 		mSubject.setEllipsize(TruncateAt.END);
 		mSubject.setSingleLine();
 		mSubject.setId(SUBJECT_ID);
+		mSubject.setTextSize(16.0f);
 		
 		LayoutParams subjectRules = new LayoutParams(LayoutParams.WRAP_CONTENT, 50);
 		addView(mSubject, subjectRules);
