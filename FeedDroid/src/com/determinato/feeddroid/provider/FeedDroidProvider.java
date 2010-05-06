@@ -336,19 +336,23 @@ public class FeedDroidProvider extends ContentProvider {
 		
 		Uri uri;
 		
-		if (URL_MATCHER.match(url) == CHANNELS) {
+		switch(URL_MATCHER.match(url)) {
+		case CHANNELS:
 			rowId = insertChannels(values);
 			uri = ContentUris.withAppendedId(FeedDroid.Channels.CONTENT_URI, rowId);
-		} else if (URL_MATCHER.match(url) == POSTS) {
+			break;
+		case POSTS:
 			rowId = insertPosts(values);
 			uri = ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI, rowId);
-		} else if (URL_MATCHER.match(url) == FOLDERS) {
+			break;
+		case FOLDERS:
 			rowId = insertFolders(values);
 			uri = ContentUris.withAppendedId(FeedDroid.Folders.CONTENT_URI, rowId);
-		} else {
+			break;
+		default:
 			throw new IllegalArgumentException("Unknown URL: " + url);
 		}
-		
+
 		if (rowId > 0) {
 			getContext().getContentResolver().notifyChange(uri, null);
 			return uri;
