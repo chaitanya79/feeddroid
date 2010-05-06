@@ -16,7 +16,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -106,7 +108,11 @@ public class SearchActivity extends ListActivity {
 			
 			SearchResult result = mResults.get(position);
 			
+			
+			
 			view.setText(result.title);
+			view.setHeight(85);
+			view.setTextSize(16.0f);
 			return view;
 		}
 
