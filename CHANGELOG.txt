@@ -1,6 +1,13 @@
 1.0 RC 2
 --------
 
+2d916 - Added RSS icon to ChannelHeader and increased font size
+8557c55 - Increased size of post list text
+b06a58b - Increased size of search result text
+83caa3a - Updated Changelog for 1.0RC2 release
+a950810 - Increased buffer size for XML reader to help improve parser performanc
+60d3d68 - Converted if block to more efficient switch in insert method
+7d7f43f - Attempting to address performance issues with GC during RSS parsing
 a950810 - Increased buffer size for XML reader to help improve parser performance
 60d3d68 - Converted if block to more efficient switch in insert method
 7d7f43f - Attempting to address performance issues with GC during RSS parsing
