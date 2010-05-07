@@ -331,7 +331,7 @@ public class FeedDroidProvider extends ContentProvider {
 	private boolean checkForDuplicatePost(String url) {
 		boolean dup = false;
 		String[] projection = {FeedDroid.Posts._ID};
-		Cursor c = mDb.query("posts", projection, "url=" + url, 
+		Cursor c = mDb.query("posts", projection, "url like '%" + url + "%'", 
 				null, null, null, null);
 		if (c.getCount() > 0)
 			dup = true;
