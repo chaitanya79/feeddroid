@@ -1,7 +1,8 @@
 1.0 RC 2
 --------
-
-2d916 - Added RSS icon to ChannelHeader and increased font size
+f9cae48 - Fix for Issue #6.  checkForDuplicatePosts method had wrong SQL query and wasn't properly detecting duplicates.
+51b84bd - UI improvents added to changelog
+cb2d916 - Added RSS icon to ChannelHeader and increased font size
 8557c55 - Increased size of post list text
 b06a58b - Increased size of search result text
 83caa3a - Updated Changelog for 1.0RC2 release
