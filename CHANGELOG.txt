@@ -1,5 +1,8 @@
 1.0 RC 2
 --------
+
+70bdd98 - Updating manifest for Issue #6 fix
+e2ea2f7 - update changelog for Issue #6 fix
 f9cae48 - Fix for Issue #6.  checkForDuplicatePosts method had wrong SQL query and wasn't properly detecting duplicates.
 51b84bd - UI improvents added to changelog
 cb2d916 - Added RSS icon to ChannelHeader and increased font size
