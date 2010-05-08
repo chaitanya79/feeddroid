@@ -46,25 +46,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.determinato.feeddroid.provider.FeedDroid;
 
 public class RssParser extends DefaultHandler {
 	private static final String TAG = "RssParser";
-	
-	private Handler mHandler;
-	private long mId;
-	private long mFolderId;
-	private String mRssUrl;
-	
-	private ContentResolver mResolver;
-	
-	private ChannelPost mPostBuf;
-	
-	private int mState;
-	private boolean htmlEscaped;
-	
 	private static final int STATE_IN_ITEM = (1 << 2);
 	private static final int STATE_IN_ITEM_TITLE = (1 << 3);
 	private static final int STATE_IN_ITEM_LINK = (1 << 4);
@@ -72,8 +60,19 @@ public class RssParser extends DefaultHandler {
 	private static final int STATE_IN_ITEM_DATE = (1 << 6);
 	private static final int STATE_IN_ITEM_AUTHOR = (1 << 7);
 	private static final int STATE_IN_TITLE = (1 << 8);
+	private static final int STATE_MEDIA_CONTENT = (1 << 9);
 	
 	private static HashMap<String, Integer> mStateMap;
+	
+	private Handler mHandler;
+	private String mRssUrl;
+	private ContentResolver mResolver;
+	private ChannelPost mPostBuf;
+	private long mId;
+	private long mFolderId;
+	private int mState;
+
+	
 	
 	static {
 		mStateMap = new HashMap<String, Integer>();
@@ -81,6 +80,7 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("entry", STATE_IN_ITEM);
 		mStateMap.put("title", STATE_IN_ITEM_TITLE);
 		mStateMap.put("link", STATE_IN_ITEM_LINK);
+		mStateMap.put("feedburner:origLink", STATE_IN_ITEM_LINK);
 		mStateMap.put("description", STATE_IN_ITEM_DESC);
 		mStateMap.put("summary", STATE_IN_ITEM_DESC);
 		mStateMap.put("content", STATE_IN_ITEM_DESC);
@@ -92,6 +92,7 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("dc:author", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("author", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("name", STATE_IN_ITEM_AUTHOR);
+		mStateMap.put("media:content", STATE_MEDIA_CONTENT);
 	}
 	
 	public RssParser(ContentResolver resolver) {
@@ -192,9 +193,7 @@ public class RssParser extends DefaultHandler {
 			return;
 		}
 		
-		if (name.equals("content") && attrs.getValue("type").equals("html")) {
-			htmlEscaped = true;
-		}
+
 		Integer state = mStateMap.get(name);
 		
 		if (state != null) {
@@ -204,7 +203,7 @@ public class RssParser extends DefaultHandler {
 				mPostBuf = new ChannelPost();
 			else if ((mState & STATE_IN_ITEM) != 0 && state.intValue() == STATE_IN_ITEM_LINK) {
 				String href = attrs.getValue("href");
-				
+			
 				if (href != null)
 					mPostBuf.link = href;
 			}
@@ -278,6 +277,7 @@ public class RssParser extends DefaultHandler {
 			else
 				mPostBuf.desc += str.toString();
 			
+			mPostBuf.desc = reEncodeHtml(mPostBuf.desc);
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_LINK:
 			mPostBuf.link = new String(ch, start, length).trim();
@@ -292,6 +292,13 @@ public class RssParser extends DefaultHandler {
 		}
 	}
 	
+	private String reEncodeHtml(String str) {
+		StringBuilder builder = new StringBuilder();
+		String[] sources = new String[] {"&gt;", "&lt;", "&amp;"};
+		String[] dests = new String[] {">", "<", "&"};
+		builder.append(TextUtils.replace(str, sources, dests));
+		return builder.toString();
+	}
 	private class ChannelPost {
 		public String title;
 		public Date date;
@@ -310,7 +317,7 @@ public class RssParser extends DefaultHandler {
 				date = DateUtils.parseDate(str);
 			}
 			catch (DateParseException e) {
-				Log.i(TAG, "Unable to parse date.  Defaulting to current.");
+				Log.i(TAG, "Unable to parse date.  Defaulting to system.");
 				date = new Date();
 			}
 			if (date == null)
