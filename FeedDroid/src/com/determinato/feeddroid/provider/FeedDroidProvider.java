@@ -289,7 +289,7 @@ public class FeedDroidProvider extends ContentProvider {
 		
 		mDb.beginTransaction();
 		try {
-			id = mDb.insert("channels", "title", values);
+			id = mDb.insert("channels", FeedDroid.Channels.TITLE, values);
 			
 			
 			if (values.containsKey(FeedDroid.Channels.ICON) == false) {
@@ -309,7 +309,11 @@ public class FeedDroidProvider extends ContentProvider {
 				mDb.update("channels", update, "_id=" + id, null);
 				
 				mDb.setTransactionSuccessful();
-			}			
+			}		
+			
+		} catch (SQLiteConstraintException e) {
+			Log.d(TAG, "Ignoring duplicate channel: " + values.getAsString(FeedDroid.Channels.URL));
+			return id;
 		} finally {
 			mDb.endTransaction();
 		}
@@ -340,7 +344,27 @@ public class FeedDroidProvider extends ContentProvider {
 	}
 	
 	private long insertFolders(ContentValues values) {
-		return mDb.insert("folders", "name", values);
+		long id = -1;
+		try {
+			if (!checkForDuplicateFolder(values.getAsString(FeedDroid.Folders.NAME), values.getAsLong(FeedDroid.Folders.PARENT_ID)))
+				id = mDb.insert("folders", FeedDroid.Folders.NAME, values);
+		} catch (SQLiteConstraintException e) {
+			
+		}
+		return id;
+	}
+	
+	private boolean checkForDuplicateFolder(String folderName, long parentFolder) {
+		boolean dup = false;
+		String[] projection = {FeedDroid.Folders._ID};
+		Cursor c = mDb.query("folders", projection, "name like '%" + folderName + "%' and parent_id=" + parentFolder, null,
+				null, null, null);
+		if (c.getCount() > 0) {
+			Log.d(TAG, "Folder " + folderName + " in parent " + parentFolder + " is a duplicate.  Ignoring.");
+			dup = true;
+		}
+		c.close();
+		return dup;
 	}
 	
 	@Override
@@ -372,12 +396,11 @@ public class FeedDroidProvider extends ContentProvider {
 			throw new IllegalArgumentException("Unknown URL: " + url);
 		}
 
-		if (rowId > 0) {
+		if (rowId > 0) 
 			getContext().getContentResolver().notifyChange(uri, null);
-			return uri;
-		}
-		
-		throw new SQLException("Failed to insert row into " + url);
+		else 
+			Log.e(TAG, "Ignoring duplicate folder " + values.getAsString(FeedDroid.Folders.NAME));
+		return uri;
 	}
 
 	@Override

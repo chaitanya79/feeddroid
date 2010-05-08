@@ -63,8 +63,8 @@ public class GoogleReaderImporter implements FeedParser {
 	private void processFolder(Node node) {
 		NamedNodeMap atts = node.getAttributes();
 		ContentValues values = new ContentValues();
-		values.put("name", atts.getNamedItem("title").getNodeValue());
-		values.put("parent_id", parentFolder);
+		values.put(FeedDroid.Folders.NAME, atts.getNamedItem("title").getNodeValue());
+		values.put(FeedDroid.Folders.PARENT_ID, parentFolder);
 		Uri uri = null;
 		try {
 			uri = mResolver.insert(FeedDroid.Folders.CONTENT_URI, values);
@@ -84,25 +84,26 @@ public class GoogleReaderImporter implements FeedParser {
 			Node child = children.item(i);
 			String name = child.getNodeName();
 			
+			
 			if (name.equalsIgnoreCase("outline")) {
 				NamedNodeMap atts = child.getAttributes();
-				
 				if (atts.getNamedItem("xmlUrl") == null) {
 					processFolder(child);
 				} else {
 					ContentValues values = new ContentValues();
-					values.put("title", atts.getNamedItem("title").getNodeValue());
-					values.put("url", atts.getNamedItem("xmlUrl").getNodeValue());
-					values.put("folder_id", parentFolder);
+					values.put(FeedDroid.Channels.TITLE, atts.getNamedItem("title").getNodeValue());
+					values.put(FeedDroid.Channels.URL, atts.getNamedItem("xmlUrl").getNodeValue());
+					values.put(FeedDroid.Channels.FOLDER_ID, parentFolder);
 					
 					try {
-						mResolver.insert(FeedDroid.Channels.CONTENT_URI, values);
+						// If the parentFolder is -1, it means that the folder is a duplicate and we shouldn't try to do an insert.
+						if (parentFolder != -1)
+							mResolver.insert(FeedDroid.Channels.CONTENT_URI, values);
 					} catch (SQLiteConstraintException e) {
 						Log.d(TAG, "ignoring duplicate channel");
 					}
 				}
 			}
 		}
-		
 	}
 }
