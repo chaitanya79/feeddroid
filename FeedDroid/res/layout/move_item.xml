@@ -14,12 +14,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  -->
- <menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/edit_channel"
-  	android:title="@string/edit_channel"/>
-  <item android:id="@+id/move_channel"
-  	android:title="@string/move_channel"/>
-  <item android:id="@+id/remove_channel"
-  	android:title="@string/remove_channel"/>
-</menu>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+  
+	<TextView
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/move_choose_folder"/>  	
+  	
+  <Spinner android:id="@+id/move_channel_spinner"
+  	android:layout_width="fill_parent"
+  	android:layout_height="wrap_content"/>
+
+</LinearLayout>

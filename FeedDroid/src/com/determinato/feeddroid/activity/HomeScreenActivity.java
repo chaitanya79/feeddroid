@@ -17,6 +17,7 @@ package com.determinato.feeddroid.activity;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -37,12 +38,16 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.determinato.feeddroid.R;
@@ -70,10 +75,12 @@ public class HomeScreenActivity extends ListActivity {
 	public static final int REFRESH_ID = Menu.FIRST + 2;
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
 	public static final int EDIT_ID = R.id.edit_channel;
+	public static final int MOVE_ID = R.id.move_channel;
 	public static final int PREFS_ID = Menu.FIRST;
 	public static final int SEARCH_ID = R.id.menu_search;
 	public static final int FOLDER_ID = R.id.menu_new_folder;
 	private static final int SHOW_PREFERENCES = 1;
+	private static final int SHOW_MOVE = 2;
 	
 	private Cursor mFolderCursor;
 	private Cursor mChannelCursor;
@@ -82,7 +89,7 @@ public class HomeScreenActivity extends ListActivity {
 	private SharedPreferences mPreferences;
 	private ContentResolver mResolver;
 	private FeedDroidUpdateService mServiceBinder;
-	
+	private int mSelectedRow;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -120,12 +127,13 @@ public class HomeScreenActivity extends ListActivity {
 		Intent bindIntent = new Intent(this, FeedDroidUpdateService.class);
 		bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
 		
-		FolderListCursorAdapter adapter = new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
-		getListView().setAdapter(adapter);
+		initAdapter();
 
 	}
 	
-	
+	private void initAdapter() {
+		getListView().setAdapter(new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor));
+	}
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -242,15 +250,81 @@ public class HomeScreenActivity extends ListActivity {
 				removeChannel(id);
 			} else if (((FolderListRow)info.targetView).getItemType() == FolderListRow.FOLDER_VIEW) {
 				removeFolder(id);
-				
-				
 			}
 			return true;
-		
+		case MOVE_ID:
+			mSelectedRow = info.position;
+			showDialog(SHOW_MOVE);
+			return true;
 		default:
 			return false;
 		}
 	}
+	
+	@Override
+	public Dialog onCreateDialog(int id) {
+		switch(id) {
+		case SHOW_MOVE:
+			LayoutInflater inflater = LayoutInflater.from(this);
+			View moveDialogView = inflater.inflate(R.layout.move_item, null);
+			AlertDialog.Builder moveDialog = new AlertDialog.Builder(this);
+			moveDialog.setTitle(getString(R.string.move_channel));
+			moveDialog.setView(moveDialogView);
+			
+			final Spinner folderSpinner = (Spinner) moveDialogView.findViewById(R.id.move_channel_spinner);
+			Cursor c = managedQuery(FeedDroid.Folders.CONTENT_URI, 
+					new String[] {FeedDroid.Folders._ID, FeedDroid.Folders.NAME}, 
+					null, null, null);
+			
+			String[] columns = new String[] {FeedDroid.Folders.NAME};
+			int[] to = new int[] {android.R.id.text1};
+			
+			SimpleCursorAdapter adapter = 
+				new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, 
+						c, columns, to);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			folderSpinner.setAdapter(adapter);
+			
+			moveDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					ContentValues values = new ContentValues();
+					long folderId = folderSpinner.getSelectedItemId();
+					Log.d(TAG, "selected row: " + mSelectedRow);
+					FolderItemDao dao = (FolderItemDao) getListView().getItemAtPosition(mSelectedRow);
+					
+					
+					long id = dao.getId();
+					Log.d(TAG, "id: " + id);
+					
+					if (dao instanceof FolderDao) {
+						values.put(FeedDroid.Folders.PARENT_ID, folderId);
+						getContentResolver().update(FeedDroid.Folders.CONTENT_URI, values, "_id=" + id, null);
+					} else {
+						values.put(FeedDroid.Channels.FOLDER_ID, folderId);
+						getContentResolver().update(FeedDroid.Channels.CONTENT_URI, values, "_id" + id, null);
+					}
+				}
+			});
+			
+			moveDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			
+			return moveDialog.create();
+		}
+		
+		initAdapter();
+		return null;
+	}
+	
+	
+	
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

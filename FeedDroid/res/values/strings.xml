@@ -27,6 +27,7 @@
     <string name="prev_channel">Previous Channel</string>
     <string name="next_channel">Next Channel</string>
     <string name="edit_channel">Edit Channel</string>
+    <string name="move_channel">Move To Folder...</string>
     <string name="remove_channel">Delete...</string>
     <string name="next_post">Newer Post</string>
     <string name="prev_post">Older Post</string>
@@ -59,6 +60,7 @@
     	Reader Preferences and click on the Import/Export tab.
     </string>
     <string name="empty_folder">Folder is empty.</string>
+    <string name="move_choose_folder">Choose folder you wish to move this item to</string>
     
     <string-array name="update_freq_options">
 		<item>Every Minute</item>

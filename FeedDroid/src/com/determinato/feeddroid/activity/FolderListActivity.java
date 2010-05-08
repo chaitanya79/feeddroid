@@ -1,6 +1,7 @@
 package com.determinato.feeddroid.activity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.ContentResolver;
@@ -11,13 +12,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.determinato.feeddroid.R;
@@ -37,16 +42,20 @@ public class FolderListActivity extends ListActivity {
 		FeedDroid.Channels.FOLDER_ID };
 
 	private static final int SHOW_PREFERENCES = 1;
+	private static final int SHOW_MOVE = 2;
 	private static final int ADD_CHANNEL_ID = R.id.menu_new_channel;
 	private static final int ADD_FOLDER_ID = R.id.menu_new_folder;
 	private static final int SEARCH_ID = R.id.menu_search;
 	private static final int PREFS_ID = Menu.FIRST;
 	private static final int DELETE_ID = R.id.remove_channel;
 	private static final int EDIT_ID = R.id.edit_channel;
+	private static final int MOVE_ID = R.id.move_channel;
 	private Cursor mFolderCursor;
 	private Cursor mChannelCursor;
 	
 	private long mFolderId;
+	private int mSelectedRow;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -183,12 +192,83 @@ public class FolderListActivity extends ListActivity {
 				
 			}
 			return true;
-		
+		case MOVE_ID:
+			mSelectedRow = info.position;
+			showDialog(SHOW_MOVE);
+			return true;
+
 		default:
 			return false;
 		}
 	}	
 	
+	
+	@Override
+	public Dialog onCreateDialog(int id) {
+		switch(id) {
+		case SHOW_MOVE:
+			LayoutInflater inflater = LayoutInflater.from(this);
+			View moveDialogView = inflater.inflate(R.layout.move_item, null);
+			AlertDialog.Builder moveDialog = new AlertDialog.Builder(this);
+			moveDialog.setTitle(getString(R.string.move_channel));
+			moveDialog.setView(moveDialogView);
+			
+			final Spinner folderSpinner = (Spinner) moveDialogView.findViewById(R.id.move_channel_spinner);
+			Cursor c = managedQuery(FeedDroid.Folders.CONTENT_URI, 
+					new String[] {FeedDroid.Folders._ID, FeedDroid.Folders.NAME}, 
+					null, null, null);
+			
+			String[] columns = new String[] {FeedDroid.Folders.NAME};
+			int[] to = new int[] {android.R.id.text1};
+			
+			SimpleCursorAdapter adapter = 
+				new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, 
+						c, columns, to);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			folderSpinner.setAdapter(adapter);
+			
+			moveDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					ContentValues values = new ContentValues();
+					long folderId = folderSpinner.getSelectedItemId();
+					Log.d(TAG, "selected row: " + mSelectedRow);
+					FolderItemDao dao = (FolderItemDao) getListView().getItemAtPosition(mSelectedRow);
+					
+					
+					long id = dao.getId();
+					Log.d(TAG, "id: " + id);
+					
+					if (dao instanceof FolderDao) {
+						values.put(FeedDroid.Folders.PARENT_ID, folderId);
+						getContentResolver().update(FeedDroid.Folders.CONTENT_URI, values, "_id=" + id, null);
+					} else {
+						values.put(FeedDroid.Channels.FOLDER_ID, folderId);
+						getContentResolver().update(FeedDroid.Channels.CONTENT_URI, values, "_id" + id, null);
+					}
+				}
+			});
+			
+			moveDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+				}
+			});
+			
+			return moveDialog.create();
+		}
+		
+		initAdapter();
+		return null;
+	}
+	
+	private void initAdapter() {
+		getListView().setAdapter(new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor));
+	}
+
 	private void removeFolder(final long folderId) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to remove this folder?")
