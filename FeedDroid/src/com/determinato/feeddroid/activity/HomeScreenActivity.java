@@ -34,7 +34,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -45,6 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
@@ -79,8 +82,14 @@ public class HomeScreenActivity extends ListActivity {
 	public static final int PREFS_ID = Menu.FIRST;
 	public static final int SEARCH_ID = R.id.menu_search;
 	public static final int FOLDER_ID = R.id.menu_new_folder;
+	
 	private static final int SHOW_PREFERENCES = 1;
 	private static final int SHOW_MOVE = 2;
+	private static final int STOP_SPLASH = 0;
+	
+	private static final long SPLASH_TIME = 5000;
+	
+	private static boolean mSplashShown = false;
 	
 	private Cursor mFolderCursor;
 	private Cursor mChannelCursor;
@@ -90,11 +99,22 @@ public class HomeScreenActivity extends ListActivity {
 	private ContentResolver mResolver;
 	private FeedDroidUpdateService mServiceBinder;
 	private int mSelectedRow;
+	private ImageView mSplash;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.folder_list);
+		
+		mSplash = (ImageView) findViewById(R.id.splash);
+		
+		if (!mSplashShown) {
+			mSplash.setVisibility(View.VISIBLE); 
+			Message msg = new Message();
+			msg.what = STOP_SPLASH;
+			splashHandler.sendMessageDelayed(msg, SPLASH_TIME);
+			mSplashShown = true;
+		}
 		
 		mFolderCursor = managedQuery(
 				FeedDroid.Folders.CONTENT_URI, FOLDER_PROJECTION, "parent_id=1", null, null);
@@ -412,4 +432,16 @@ public class HomeScreenActivity extends ListActivity {
 		unbindService(mConnection);
 		super.onStop();
 	}
+	
+	private Handler splashHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case STOP_SPLASH:
+				mSplash.setVisibility(View.GONE);
+				break;
+			}
+			super.handleMessage(msg);
+		}
+	};
 }
