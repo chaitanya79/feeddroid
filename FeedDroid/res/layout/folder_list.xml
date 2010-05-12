@@ -23,6 +23,12 @@
   android:layout_height="fill_parent"
   android:paddingTop="2px">
   
+  	<ImageView android:id="@+id/splash"
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content"
+  		android:background="@drawable/feeddroid_splash"
+  		android:visibility="gone"/>
+  		
   	<ListView android:id="@android:id/list"
   		android:layout_width="fill_parent"
   		android:layout_height="fill_parent"
