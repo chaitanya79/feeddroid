@@ -307,7 +307,7 @@ public class HomeScreenActivity extends ListActivity {
 			
 			moveDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 				
-				@Override
+				
 				public void onClick(DialogInterface dialog, int which) {
 					
 					ContentValues values = new ContentValues();
@@ -331,7 +331,7 @@ public class HomeScreenActivity extends ListActivity {
 			
 			moveDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 				
-				@Override
+				
 				public void onClick(DialogInterface dialog, int which) {
 				}
 			});
