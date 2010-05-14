@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
@@ -48,7 +49,7 @@ import com.determinato.feeddroid.provider.FeedDroid;
 public class PreferencesActivity extends Activity {
 	private static final String TAG = "PreferencesActivity";
 	private static final String ONBOARD_STORAGE_DIR = "/emmc/";
-	private static final String SDCARD_DIR = "/sdcard/";
+	private static final String SDCARD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
 	private static final String IMPORT_FILENAME = "feeds.xml";
 	private static final int IMPORT_DIALOG = 1;
 	
