@@ -49,7 +49,7 @@ import com.determinato.feeddroid.provider.FeedDroid;
 public class PreferencesActivity extends Activity {
 	private static final String TAG = "PreferencesActivity";
 	private static final String ONBOARD_STORAGE_DIR = "/emmc/";
-	private static final String SDCARD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath();
+	private static final String SDCARD_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
 	private static final String IMPORT_FILENAME = "feeds.xml";
 	private static final int IMPORT_DIALOG = 1;
 	
@@ -69,7 +69,8 @@ public class PreferencesActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.prefs);
-	
+
+		Log.d(TAG, "storage dir: " + SDCARD_DIR);
 		mContext = this;
 		mPreferences = getSharedPreferences(USER_PREFERENCE, Activity.MODE_PRIVATE);
 		

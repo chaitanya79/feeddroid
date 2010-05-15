@@ -25,7 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Binder;
-import android.os.Handler;
+import android.os.Debug;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -35,7 +35,6 @@ import com.determinato.feeddroid.activity.PreferencesActivity;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.provider.FeedDroidWidget;
-import com.determinato.feeddroid.util.DownloadManager;
 
 public class FeedDroidUpdateService extends Service {
 	private static final String TAG = "FeedDroidUpdateService";
@@ -122,6 +121,7 @@ public class FeedDroidUpdateService extends Service {
 	}
 	
 	public void updateAllChannels() {
+		Debug.startMethodTracing("parser");
 		c.requery();
 		c.moveToFirst();
 		do {
@@ -132,7 +132,7 @@ public class FeedDroidUpdateService extends Service {
 		
 		c.close();
 		
-		
+		Debug.stopMethodTracing();
 	}
 	
 	public void updateChannel(long id, String url) {
@@ -151,6 +151,7 @@ public class FeedDroidUpdateService extends Service {
 	}
 
 	private Runnable doParse(final long id, final String url) {
+		
 		Runnable parseRssThread = new Runnable() {
 			public void run() {
 				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
@@ -172,6 +173,7 @@ public class FeedDroidUpdateService extends Service {
 				}
 			};
 		};
+		
 		
 		return parseRssThread;
 	}
