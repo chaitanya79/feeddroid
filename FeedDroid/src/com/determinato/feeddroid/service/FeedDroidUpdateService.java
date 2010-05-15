@@ -34,6 +34,7 @@ import com.determinato.feeddroid.activity.HomeScreenActivity;
 import com.determinato.feeddroid.activity.PreferencesActivity;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
+import com.determinato.feeddroid.provider.FeedDroidWidget;
 import com.determinato.feeddroid.util.DownloadManager;
 
 public class FeedDroidUpdateService extends Service {
@@ -117,6 +118,7 @@ public class FeedDroidUpdateService extends Service {
 		
 		notification.setLatestEventInfo(getApplicationContext(), titleTxt, tickerTxt, pending);
 		mNotificationMgr.notify(1, notification);
+		sendBroadcast(new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE));
 	}
 	
 	public void updateAllChannels() {

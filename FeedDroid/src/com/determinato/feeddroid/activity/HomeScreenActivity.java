@@ -59,6 +59,7 @@ import com.determinato.feeddroid.dao.ChannelDao;
 import com.determinato.feeddroid.dao.FolderDao;
 import com.determinato.feeddroid.dao.FolderItemDao;
 import com.determinato.feeddroid.provider.FeedDroid;
+import com.determinato.feeddroid.provider.FeedDroidWidget;
 import com.determinato.feeddroid.service.FeedDroidUpdateService;
 import com.determinato.feeddroid.view.FolderListRow;
 
@@ -135,6 +136,14 @@ public class HomeScreenActivity extends ListActivity {
         	Log.d(TAG, "update in " + time / 1000 + " seconds.");
         	alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + time, time, pending);
         }
+        
+        
+        // Set up widget updates
+        Intent updateIntent = new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE);
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, updateIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+        		AlarmManager.INTERVAL_HALF_DAY, AlarmManager.INTERVAL_HOUR, pi);
 	}
 
 	@Override

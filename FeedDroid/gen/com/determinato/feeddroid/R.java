@@ -68,6 +68,7 @@ containing a value of this type.
         public static final int redo=0x7f020003;
         public static final int rss_status_bar=0x7f020004;
         public static final int rssorange=0x7f020005;
+        public static final int widget_frame=0x7f020006;
     }
     public static final class id {
         public static final int add=0x7f0a0001;
@@ -84,20 +85,20 @@ containing a value of this type.
         public static final int channel_post_count=0x7f0a0009;
         public static final int channel_refresh=0x7f0a0008;
         public static final int chk_auto_update=0x7f0a0020;
-        public static final int edit_channel=0x7f0a0027;
+        public static final int edit_channel=0x7f0a0029;
         public static final int folder_item_icon=0x7f0a000f;
         public static final int folder_item_title=0x7f0a0010;
         public static final int folder_item_unread=0x7f0a0011;
         public static final int folder_list_ad=0x7f0a000e;
         public static final int folder_name=0x7f0a000a;
         public static final int frequency=0x7f0a0022;
-        public static final int menu_mark_all_read=0x7f0a002d;
-        public static final int menu_new_channel=0x7f0a002b;
-        public static final int menu_new_folder=0x7f0a002a;
-        public static final int menu_search=0x7f0a002c;
-        public static final int move_channel=0x7f0a0028;
+        public static final int menu_mark_all_read=0x7f0a002f;
+        public static final int menu_new_channel=0x7f0a002d;
+        public static final int menu_new_folder=0x7f0a002c;
+        public static final int menu_search=0x7f0a002e;
+        public static final int move_channel=0x7f0a002a;
         public static final int move_channel_spinner=0x7f0a0012;
-        public static final int next_post_id=0x7f0a002e;
+        public static final int next_post_id=0x7f0a0030;
         public static final int parent_folder=0x7f0a000b;
         public static final int postListHead=0x7f0a0013;
         public static final int postText=0x7f0a001d;
@@ -105,8 +106,8 @@ containing a value of this type.
         public static final int postViewHead=0x7f0a001b;
         public static final int post_list_ad=0x7f0a0017;
         public static final int posted_on=0x7f0a001a;
-        public static final int prev_post_id=0x7f0a002f;
-        public static final int remove_channel=0x7f0a0029;
+        public static final int prev_post_id=0x7f0a0031;
+        public static final int remove_channel=0x7f0a002b;
         public static final int search_text=0x7f0a0026;
         public static final int show_all=0x7f0a0014;
         public static final int show_starred=0x7f0a0016;
@@ -118,6 +119,8 @@ containing a value of this type.
         public static final int txt_freq=0x7f0a0021;
         public static final int txt_starred=0x7f0a001f;
         public static final int url=0x7f0a0000;
+        public static final int widget_article_title=0x7f0a0028;
+        public static final int widget_image=0x7f0a0027;
     }
     public static final class layout {
         public static final int channel_add=0x7f030000;
@@ -133,6 +136,7 @@ containing a value of this type.
         public static final int post_view=0x7f03000a;
         public static final int prefs=0x7f03000b;
         public static final int search=0x7f03000c;
+        public static final int widget_layout=0x7f03000d;
     }
     public static final class menu {
         public static final int channel_list_context_menu=0x7f090000;
@@ -190,6 +194,7 @@ containing a value of this type.
     }
     public static final class xml {
         public static final int searchable=0x7f040000;
+        public static final int widget=0x7f040001;
     }
     public static final class styleable {
         /** Attributes that can be used with a com_admob_android_ads_AdView.
