@@ -27,6 +27,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -35,6 +36,8 @@ import com.determinato.feeddroid.activity.HomeScreenActivity;
 import com.determinato.feeddroid.activity.PostViewActivity;
 
 public class FeedDroidWidget extends AppWidgetProvider {
+	private static final String TAG = "FeedDroidWidget";
+	
 	public static final String FORCE_WIDGET_UPDATE =
 		"com.determinato.feeddroid.FORCE_WIDGET_UPDATE";
 	
@@ -57,6 +60,7 @@ public class FeedDroidWidget extends AppWidgetProvider {
 	
 	
 	private void updateWidget(Context ctx, AppWidgetManager manager, int[] ids) {
+		Log.d(TAG, "updateWidget called");
 		ContentResolver resolver = ctx.getContentResolver();
 		Cursor c = resolver.query(FeedDroid.Posts.CONTENT_URI, null, null, null, null);
 		Cursor p = null;
