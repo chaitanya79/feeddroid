@@ -1,3 +1,23 @@
+1.0 RC 3
+--------
+0823bef - Fixed FC when starting up app for first time.
+07a287e - Fixing widget
+ac63d18 - Update for RC3
+db15588 - Update version
+b1df1d3 - Move call to reEncodeHtml to endElement to improve performance.
+e3c555a - Added trailing forward slash to end of the SDCARD location variable.
+4f8a9d3 - Added home screen widget
+ac1ee62 - Converted hard-coded sdcard directory to use Environment API
+61877d0 - Removed @Override annotations that were causing problems
+ac57911 - Added splash screen
+1e28c80 - Added splash screen
+7b9f440 - Merge branch 'develop'
+aefaf91 - Added method to convert posts with XML-escaped HTML tags in the content.
+8d452e5 - Fix for #4. Added ability to move items between folders
+08cbd09 - Fix for #1.  Added some logic to check for duplicate folders when trying to do a re-import from Google Reader.
+21ab6a9 - Another changelog add
+
+
 1.0 RC 2
 --------
 
