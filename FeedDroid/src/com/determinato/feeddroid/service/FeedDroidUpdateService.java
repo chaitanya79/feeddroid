@@ -121,7 +121,6 @@ public class FeedDroidUpdateService extends Service {
 	}
 	
 	public void updateAllChannels() {
-		Debug.startMethodTracing("parser");
 		c.requery();
 		c.moveToFirst();
 		do {
@@ -131,8 +130,6 @@ public class FeedDroidUpdateService extends Service {
 		} while(c.moveToNext());
 		
 		c.close();
-		
-		Debug.stopMethodTracing();
 	}
 	
 	public void updateChannel(long id, String url) {
@@ -151,7 +148,6 @@ public class FeedDroidUpdateService extends Service {
 	}
 
 	private Runnable doParse(final long id, final String url) {
-		
 		Runnable parseRssThread = new Runnable() {
 			public void run() {
 				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
@@ -171,9 +167,9 @@ public class FeedDroidUpdateService extends Service {
 				} finally {
 					p.close();
 				}
+				
 			};
 		};
-		
 		
 		return parseRssThread;
 	}

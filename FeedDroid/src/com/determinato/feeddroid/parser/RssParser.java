@@ -229,7 +229,7 @@ public class RssParser extends DefaultHandler {
 				values.put(FeedDroid.Posts.URL, mPostBuf.link);
 				values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
 				values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
-				values.put(FeedDroid.Posts.BODY, mPostBuf.desc);
+				values.put(FeedDroid.Posts.BODY, reEncodeHtml(mPostBuf.desc));
 					
 				try {
 					mResolver.insert(FeedDroid.Posts.CONTENT_URI, values);
@@ -261,6 +261,7 @@ public class RssParser extends DefaultHandler {
 		
 		if ((mState & STATE_IN_ITEM) == 0)
 			return;
+		
 		StringBuilder str = new StringBuilder();
 		switch(mState) {
 		case STATE_IN_ITEM | STATE_IN_ITEM_TITLE:
@@ -276,8 +277,6 @@ public class RssParser extends DefaultHandler {
 				mPostBuf.desc = str.toString();
 			else
 				mPostBuf.desc += str.toString();
-			
-			mPostBuf.desc = reEncodeHtml(mPostBuf.desc);
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_LINK:
 			mPostBuf.link = new String(ch, start, length).trim();
@@ -299,6 +298,7 @@ public class RssParser extends DefaultHandler {
 		builder.append(TextUtils.replace(str, sources, dests));
 		return builder.toString();
 	}
+	
 	private class ChannelPost {
 		public String title;
 		public Date date;
@@ -334,13 +334,13 @@ public class RssParser extends DefaultHandler {
 
 	@Override
 	public void endDocument() throws SAXException {
-		Log.d(TAG, "Parsing finished.");
+		Log.d(TAG, "Parsing of " + mRssUrl + " finished.");
 		super.endDocument();
 	}
 
 	@Override
 	public void startDocument() throws SAXException {
-		Log.d(TAG, "Parsing RSS XML...");
+		Log.d(TAG, "Parsing RSS XML: " + mRssUrl);
 		super.startDocument();
 	}
 	
