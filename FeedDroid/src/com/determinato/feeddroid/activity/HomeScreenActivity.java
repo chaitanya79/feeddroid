@@ -138,12 +138,7 @@ public class HomeScreenActivity extends ListActivity {
         }
         
         
-        // Set up widget updates
-        Intent updateIntent = new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE);
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, updateIntent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-        		AlarmManager.INTERVAL_HALF_DAY, AlarmManager.INTERVAL_HOUR, pi);
+
 	}
 
 	@Override

@@ -66,14 +66,20 @@ public class FeedDroidWidget extends AppWidgetProvider {
 		Cursor p = null;
 		try {
 			int postCount = c.getCount();
+			if (postCount == 0) {
+				c.close();
+				return;
+			}
 			Random generator = new Random(System.currentTimeMillis());
 			Integer r = generator.nextInt(postCount);
 
 			p = resolver.query(FeedDroid.Posts.CONTENT_URI, new String[] {FeedDroid.Posts.TITLE}, "_id=? and read=0",
 					new String[] {r.toString()}, null);
 
-			if (p.getCount() == 0)
+			if (p.getCount() == 0) {
+				p.close();
 				return;
+			}
 
 			p.moveToFirst();
 			final int N = ids.length;
