@@ -32,6 +32,12 @@ import android.widget.EditText;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * Activity to edit details of an RSS feed.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class ChannelEditActivity extends Activity {
 	private EditText mUrl;
 	private EditText mTitle;
@@ -48,6 +54,9 @@ public class ChannelEditActivity extends Activity {
 	private static final int TITLE_INDEX = 2;
 	private static final int ICON_INDEX = 3;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,6 +72,9 @@ public class ChannelEditActivity extends Activity {
 		save.setOnClickListener(mSaveListener);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -84,7 +96,9 @@ public class ChannelEditActivity extends Activity {
 	}
 
 	
-	
+	/**
+	 * Updates the RSS feed's values in the database.
+	 */
 	private void updateProvider() {
 		if (mCursor == null)
 			return;
@@ -96,6 +110,9 @@ public class ChannelEditActivity extends Activity {
 		resolver.update(FeedDroid.Channels.CONTENT_URI, values, null, null);
 	}
 	
+	/**
+	 * Listener for UI's Save button.
+	 */
 	private OnClickListener mSaveListener = new OnClickListener() {
 		public void onClick(View v) {
 			updateProvider();

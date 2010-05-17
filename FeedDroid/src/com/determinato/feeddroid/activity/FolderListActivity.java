@@ -33,6 +33,12 @@ import com.determinato.feeddroid.dao.FolderItemDao;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.view.FolderListRow;
 
+/**
+ * List of folders and RSS channels for a given folder ID.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class FolderListActivity extends ListActivity {
 	private static final String TAG = "FolderListActivity";
 	private static final String[] FOLDER_PROJECTION = new String[] {FeedDroid.Folders._ID, 
@@ -56,7 +62,9 @@ public class FolderListActivity extends ListActivity {
 	private long mFolderId;
 	private int mSelectedRow;
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,7 +89,9 @@ public class FolderListActivity extends ListActivity {
 		
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = null;
@@ -102,6 +112,9 @@ public class FolderListActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -116,6 +129,9 @@ public class FolderListActivity extends ListActivity {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent i;
@@ -146,6 +162,9 @@ public class FolderListActivity extends ListActivity {
 		return super.onOptionsItemSelected(item);
 	}	
 		
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -155,6 +174,9 @@ public class FolderListActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -170,6 +192,9 @@ public class FolderListActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -202,7 +227,9 @@ public class FolderListActivity extends ListActivity {
 		}
 	}	
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Dialog onCreateDialog(int id) {
 		switch(id) {
@@ -265,10 +292,20 @@ public class FolderListActivity extends ListActivity {
 		return null;
 	}
 	
+	/**
+	 * Initializes/resets List adapter.
+	 */
 	private void initAdapter() {
 		getListView().setAdapter(new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor));
 	}
 
+	/**
+	 * Removes a folder from the database.
+	 * 
+	 * <p>If the folder contains items, they will be moved to the root folder.</p>
+	 * 
+	 * @param folderId ID of folder to remove
+	 */
 	private void removeFolder(final long folderId) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to remove this folder?")
@@ -297,6 +334,11 @@ public class FolderListActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * Removes an RSS channel from the database.
+	 * 
+	 * @param channelId ID of channel to remove
+	 */
 	private void removeChannel(final long channelId) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to remove this channel?")

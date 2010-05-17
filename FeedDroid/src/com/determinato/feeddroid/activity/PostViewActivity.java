@@ -46,6 +46,12 @@ import com.determinato.feeddroid.util.KeyUtils;
 import com.determinato.feeddroid.util.GestureFilter.SimpleGestureListener;
 import com.determinato.feeddroid.view.ChannelHeader;
 
+/**
+ * Activity to view a RSS post.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class PostViewActivity extends Activity {
 	private static final String TAG = "PostView";
 	
@@ -68,6 +74,10 @@ public class PostViewActivity extends Activity {
 	private ContentResolver mResolver;
 	private ImageButton mStarred;
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -109,7 +119,9 @@ public class PostViewActivity extends Activity {
 		
 	}
 	
-	
+	/**
+	 * Listener for starred button.
+	 */
 	OnClickListener btn_listener = new OnClickListener() {
 		public void onClick(View v) {
 			Uri uri = getIntent().getData();
@@ -135,6 +147,9 @@ public class PostViewActivity extends Activity {
 		}
 	};
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -150,6 +165,9 @@ public class PostViewActivity extends Activity {
 				"_id=?", new String[] {Long.toString(mPostId)});
 	}
 	
+	/**
+	 * Initializes data for the view.
+	 */
 	public void initWithData() {
 		ContentResolver resolver = getContentResolver();
 		
@@ -180,6 +198,10 @@ public class PostViewActivity extends Activity {
 		postText.loadData(html, "text/html", "utf-8");
 	}
 	
+	/**
+	 * Gets body of post from the database and appends a "Read more..." link.
+	 * @return body of post
+	 */
 	private String getBody() {
 		String body = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.BODY));
 		String url = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.URL));
@@ -194,6 +216,12 @@ public class PostViewActivity extends Activity {
 		return body;
 	}
 	
+	/**
+	 * Determines if a post has a "Read More" link
+	 * @param body RSS post body
+	 * @param url RSS post URL
+	 * @return true if link exists, false otherwise
+	 */
 	private boolean hasMoreLink(String body, String url) {
 		int urlPos;
 
@@ -213,6 +241,9 @@ public class PostViewActivity extends Activity {
 		return true;
 	}
 	
+	/**
+	 * Gets children.
+	 */
 	private void getSiblings() {
 		if (mNextPostId < 0 || mPrevPostId < 0) {
 			Cursor cPostList = getContentResolver().query(ContentUris.withAppendedId(FeedDroid.Posts.CONTENT_URI_LIST, mChannelId),
@@ -274,6 +305,9 @@ public class PostViewActivity extends Activity {
 		return true;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
@@ -286,6 +320,9 @@ public class PostViewActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 			switch(KeyUtils.intrepretDirection(keyCode)) {
@@ -299,6 +336,9 @@ public class PostViewActivity extends Activity {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch(KeyUtils.intrepretDirection(keyCode)) {
@@ -308,6 +348,9 @@ public class PostViewActivity extends Activity {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onDestroy() {
 		mCursor.close();

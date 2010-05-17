@@ -27,22 +27,39 @@ import android.widget.Filterable;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.view.ChannelListRow;
 
+/**
+ * Adapter for RSS channel list.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class ChannelListAdapter extends CursorAdapter implements Filterable {
 	private HashMap<Long, ChannelListRow> rowMap;
 	
-	
+	/**
+	 * Constructor.
+	 * @param ctx Context of ListView
+	 * @param c Cursor containing data to display.
+	 */
 	public ChannelListAdapter(Context ctx, Cursor c) {
 		super(ctx, c);
 		
 		rowMap = new HashMap<Long, ChannelListRow>();
 	}
 	
+	/**
+	 * Updates row in list.
+	 * @param c Cursor containing data
+	 * @param row View to update
+	 */
 	protected void updateRowMap(Cursor c, ChannelListRow row) {
 		long channelId =
 			c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
 		rowMap.put(new Long(channelId), row);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override 
 	public void bindView(View v, Context ctx, Cursor c) {
 		ChannelListRow row = (ChannelListRow) v;
@@ -50,6 +67,9 @@ public class ChannelListAdapter extends CursorAdapter implements Filterable {
 		updateRowMap(c, row);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public View newView(Context ctx, Cursor c, ViewGroup parent) {
 		ChannelListRow row = new ChannelListRow(ctx);
@@ -58,6 +78,11 @@ public class ChannelListAdapter extends CursorAdapter implements Filterable {
 		return row;
 	}
 	
+	/**
+	 * Find row by its ID.
+	 * @param id ID to locate
+	 * @return View of data for selected ID.
+	 */
 	public ChannelListRow getViewByRowId(long id) {
 		return rowMap.get(id);
 	}

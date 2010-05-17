@@ -46,6 +46,11 @@ import com.determinato.feeddroid.parser.GoogleReaderImporter;
 import com.determinato.feeddroid.parser.OPMLParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * Preferences activity.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class PreferencesActivity extends Activity {
 	private static final String TAG = "PreferencesActivity";
 	private static final String ONBOARD_STORAGE_DIR = "/emmc/";
@@ -53,8 +58,11 @@ public class PreferencesActivity extends Activity {
 	private static final String IMPORT_FILENAME = "feeds.xml";
 	private static final int IMPORT_DIALOG = 1;
 	
+	/** User preference identifier */
 	public static final String USER_PREFERENCE = "USER_PREFERENCES";
+	/** Auto-update identifier */
 	public static final String PREF_AUTO_UPDATE = "PREF_AUTO_UPDATE";
+	/** Update frequency identifier */
 	public static final String PREF_UPDATE_FREQ = "PREF_UPDATE_FREQ";
 	
 	CheckBox mAutoUpdate;
@@ -65,6 +73,9 @@ public class PreferencesActivity extends Activity {
 	private boolean mIsImported;
 	private Intent mReturnIntent;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,6 +107,9 @@ public class PreferencesActivity extends Activity {
 			}
 		});
 
+		/**
+		 * OK button listener
+		 */
 		okButton.setOnClickListener(new View.OnClickListener() {
 			AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 			private static final String ALARM_ACTION = "com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM";
@@ -165,7 +179,9 @@ public class PreferencesActivity extends Activity {
 		updateUIFromPreferences();
 	}
 	
-	
+	/**
+	 * Saves preferences to SharedPreferences.
+	 */
 	private void savePreferences() {
 		int updateFreq = mUpdateFrequency.getSelectedItemPosition();
 		boolean autoUpdate = mAutoUpdate.isChecked();
@@ -177,6 +193,9 @@ public class PreferencesActivity extends Activity {
 		editor.commit();
 	}
 	
+	/**
+	 * Updates UI from SharedPreferences.
+	 */
 	private void updateUIFromPreferences() {
 		boolean autoUpdate = mPreferences.getBoolean(PREF_AUTO_UPDATE, false);
 		int updateFreq = mPreferences.getInt(PREF_UPDATE_FREQ, 15);
@@ -220,6 +239,9 @@ public class PreferencesActivity extends Activity {
 		mAutoUpdate.setChecked(autoUpdate);
 	}
 	
+	/**
+	 * Listener for frequency drop-down.
+	 */
 	public class ItemListener implements OnItemSelectedListener {
 		
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {

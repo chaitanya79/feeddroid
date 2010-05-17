@@ -45,6 +45,12 @@ import com.determinato.feeddroid.util.KeyUtils;
 import com.determinato.feeddroid.view.ChannelHeader;
 import com.determinato.feeddroid.view.PostListRow;
 
+/**
+ * Activity to list posts for a given RSS feed.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class PostListActivity extends ListActivity {
 	private static final String TAG = "PostListActivity";
 	private static final int MARK_ALL_READ_ID = R.id.menu_mark_all_read;
@@ -65,6 +71,9 @@ public class PostListActivity extends ListActivity {
 	private RadioButton all;
 	private RadioButton starred;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,6 +99,9 @@ public class PostListActivity extends ListActivity {
 		initWithData();
 	}
 	
+	/**
+	 * Initializes channel name header.
+	 */
 	private void initWithData() {
 		long channelId = Long.parseLong(getIntent().getData().getPathSegments().get(1));
 		
@@ -108,6 +120,9 @@ public class PostListActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * Radio button listener for All/Unread/Starred.
+	 */
 	private OnClickListener radio_listener = new OnClickListener() {
 		public void onClick(View v) {
 			ListAdapter adapter = null;
@@ -134,18 +149,27 @@ public class PostListActivity extends ListActivity {
 		}
 	};
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStart() {
 		initWithData();
 		super.onStart();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
 		initWithData();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Log.d(TAG, "List item clicked: " + id);
@@ -163,7 +187,9 @@ public class PostListActivity extends ListActivity {
 		}
 	}
 
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override 
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.removeGroup(0);
@@ -175,6 +201,9 @@ public class PostListActivity extends ListActivity {
 		return true;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
@@ -187,7 +216,9 @@ public class PostListActivity extends ListActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	
+	/**
+	 * Marks all posts for the current RSS channel as read.
+	 */
 	private void markAllPostsRead() {
 		ContentValues values = new ContentValues();
 		values.put("read", 1);
@@ -196,6 +227,9 @@ public class PostListActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * Gets child folders and channels of the current item.
+	 */
 	private void getSiblings() {
 		if (mNextId >= 0 && mPrevId >= 0)
 			return;
@@ -255,6 +289,9 @@ public class PostListActivity extends ListActivity {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		switch(KeyUtils.intrepretDirection(keyCode)) {
@@ -270,6 +307,9 @@ public class PostListActivity extends ListActivity {
 		return false;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch(KeyUtils.intrepretDirection(keyCode)) {
@@ -279,6 +319,11 @@ public class PostListActivity extends ListActivity {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * List adapter
+	 *
+	 */
 	private static class PostListAdapter extends CursorAdapter implements Filterable {
 		public PostListAdapter(Cursor c, Context ctx) {
 			super(ctx, c);

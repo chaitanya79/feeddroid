@@ -25,6 +25,11 @@ import android.widget.TextView;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * Search UI activity.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class SearchActivity extends ListActivity {
 	private static final String TAG = "SearchActivity";
 	private TextView mTextView;
@@ -32,6 +37,9 @@ public class SearchActivity extends ListActivity {
 	private ArrayList<SearchResult> mSearchResults;
 	private ContentResolver mResolver;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +56,10 @@ public class SearchActivity extends ListActivity {
 		}
 	}
 	
+	/**
+	 * Performs the search.
+	 * @param query Query string to search for
+	 */
 	private void doSearch(String query) {
 		String[] projection = new String[] {
 			FeedDroid.Posts._ID, FeedDroid.Posts.CHANNEL_ID,
@@ -118,7 +130,9 @@ public class SearchActivity extends ListActivity {
 
 	}
 
-	
+	/**
+	 * Wrapper class for search results.
+	 */
 	class SearchResult {
 		public long id;
 		public long channel_id;
@@ -126,7 +140,9 @@ public class SearchActivity extends ListActivity {
 		public String body;
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		SearchResult result = mSearchResults.get(position);

@@ -63,9 +63,14 @@ import com.determinato.feeddroid.provider.FeedDroidWidget;
 import com.determinato.feeddroid.service.FeedDroidUpdateService;
 import com.determinato.feeddroid.view.FolderListRow;
 
+/**
+ * Main application activity.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class HomeScreenActivity extends ListActivity {
 	private static final String TAG = "HomeScreenActivity";
-	public static final String TAG_PREFS = "FeedDroid";
 	private static final String[] FOLDER_PROJECTION = {FeedDroid.Folders._ID, 
 		FeedDroid.Folders.NAME, FeedDroid.Folders.PARENT_ID};
 	private static final String[] CHANNEL_PROJECTION = {
@@ -73,15 +78,27 @@ public class HomeScreenActivity extends ListActivity {
 		FeedDroid.Channels.ICON, FeedDroid.Channels.FOLDER_ID
 	};
 
+	/** Preferences tag */
+	public static final String TAG_PREFS = "FeedDroid";
+	/** Add channel menu identifier */
 	public static final int ADD_CHANNEL_ID = R.id.menu_new_channel;
+	/** Add folder menu identifier */
 	public static final int ADD_FOLDER_ID = R.id.menu_new_folder;
+	/** Delete menu identifier */
 	public static final int DELETE_ID = R.id.remove_channel;
+	/** Refresh menu identifier */
 	public static final int REFRESH_ID = Menu.FIRST + 2;
+	/** Refresh All menu identifier */
 	public static final int REFRESH_ALL_ID = Menu.FIRST + 3;
+	/** Edit menu identifier */
 	public static final int EDIT_ID = R.id.edit_channel;
+	/** Move menu identifier */
 	public static final int MOVE_ID = R.id.move_channel;
+	/** Preferences menu identifier */
 	public static final int PREFS_ID = Menu.FIRST;
+	/** Search menu identifier */
 	public static final int SEARCH_ID = R.id.menu_search;
+	/** New folder menu identifier */
 	public static final int FOLDER_ID = R.id.menu_new_folder;
 	
 	private static final int SHOW_PREFERENCES = 1;
@@ -102,6 +119,9 @@ public class HomeScreenActivity extends ListActivity {
 	private int mSelectedRow;
 	private ImageView mSplash;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -141,6 +161,9 @@ public class HomeScreenActivity extends ListActivity {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -155,10 +178,16 @@ public class HomeScreenActivity extends ListActivity {
 
 	}
 	
+	/**
+	 * Initializes/Refreshes adapter
+	 */
 	private void initAdapter() {
 		getListView().setAdapter(new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor));
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = null;
@@ -179,6 +208,9 @@ public class HomeScreenActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
@@ -192,6 +224,9 @@ public class HomeScreenActivity extends ListActivity {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -207,7 +242,9 @@ public class HomeScreenActivity extends ListActivity {
 	}
 	
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent i;
@@ -241,7 +278,9 @@ public class HomeScreenActivity extends ListActivity {
 		return super.onOptionsItemSelected(item);
 	}	
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -256,6 +295,9 @@ public class HomeScreenActivity extends ListActivity {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -285,6 +327,9 @@ public class HomeScreenActivity extends ListActivity {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Dialog onCreateDialog(int id) {
 		switch(id) {
@@ -349,7 +394,9 @@ public class HomeScreenActivity extends ListActivity {
 	
 	
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -393,6 +440,10 @@ public class HomeScreenActivity extends ListActivity {
 		
 	}
 	
+	/**
+	 * Removes a RSS channel from the database.
+	 * @param channelId ID of channel to remove
+	 */
 	private void removeChannel(final long channelId) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to remove this channel?")
@@ -416,6 +467,12 @@ public class HomeScreenActivity extends ListActivity {
 		builder.create().show();
 	}
 	
+	/**
+	 * Forces update of all channels.
+	 * 
+	 * <p>This method calls the {@link com.determinato.feeddroid.service.FeedDroidUpdateService} 
+	 * and requests it to update all RSS feeds in the background.</p>
+	 */
 	private void updateAllChannels() {
 		mServiceBinder.updateAllChannels();
 	}
@@ -430,13 +487,18 @@ public class HomeScreenActivity extends ListActivity {
 		}
 	};
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onStop() {
 		unbindService(mConnection);
 		super.onStop();
 	}
 	
+	/**
+	 * Handler to remove splash screen and display main interface.
+	 */
 	private Handler splashHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {

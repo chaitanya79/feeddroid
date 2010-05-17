@@ -29,13 +29,21 @@ import android.widget.Spinner;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
 
-
+/**
+ * Activity to add a folder.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class FolderAddActivity extends Activity {
 	private static final String TAG = "FolderAddActivity";
 	
 	private EditText mFolderName;
 	private Spinner mParentFolder;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

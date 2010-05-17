@@ -29,6 +29,11 @@ import com.determinato.feeddroid.dao.FolderItemDao;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.view.FolderListRow;
 
+/**
+ * Adapter for folder list activity.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class FolderListCursorAdapter extends BaseAdapter {
 	private static final String TAG = "FolderListCursorAdapter";
 	private Cursor mFolderCursor;
@@ -36,7 +41,12 @@ public class FolderListCursorAdapter extends BaseAdapter {
 	private Context mContext;
 	private static ArrayList<FolderItemDao> rows;
 	
-	
+	/**
+	 * Constructor.
+	 * @param context Context of the List View.
+	 * @param folderCursor Cursor containing folders.
+	 * @param channelCursor Cursor containing channels.
+	 */
 	public FolderListCursorAdapter(Context context, Cursor folderCursor, Cursor channelCursor) {
 		mFolderCursor = folderCursor;
 		mChannelCursor = channelCursor;
@@ -47,6 +57,11 @@ public class FolderListCursorAdapter extends BaseAdapter {
 		populateRowMap();
 	}
 	
+	/**
+	 * Returns number of rows in the adapter.
+	 * 
+	 * @return number of rows, or 0.
+	 */
 	public int getCount() {
 		if (rows == null)
 			return 0;
@@ -54,14 +69,30 @@ public class FolderListCursorAdapter extends BaseAdapter {
 			return rows.size();
 	}
 
+	/**
+	 * Gets View at specified position.
+	 * 
+	 * @param position Position of item in the list
+	 * @return FolderItemDao
+	 */
 	public FolderItemDao getItem(int position) {
 		return rows.get(position);
 	}
 
+	
 	public long getItemId(int position) {
 		return position;
 	}
 
+	/**
+	 * Returns view at specified position in the list.
+	 * 
+	 * @param position position in the list
+	 * @param convertView recycled view
+	 * @param parent The list view
+	 * 
+	 * @return the View at the specified position
+	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		
 		FolderListRow row = null;
@@ -77,15 +108,25 @@ public class FolderListCursorAdapter extends BaseAdapter {
 		return row;
 	}
 
+	/**
+	 * Requerys the cursors after a database refresh.
+	 */
 	public void refresh() {
 		mFolderCursor.requery();
 		mChannelCursor.requery();
 	}
 	
+	/**
+	 * Returns the list
+	 * @return ArrayList of FolderItemDao objects
+	 */
 	public ArrayList<FolderItemDao> getRows() {
 		return rows;
 	}
 	
+	/**
+	 * Populates the row map.
+	 */
 	private void populateRowMap() {
 		if (mFolderCursor.getCount() > 0) {
 			mFolderCursor.moveToFirst();

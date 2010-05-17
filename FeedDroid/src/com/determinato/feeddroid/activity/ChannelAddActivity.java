@@ -37,6 +37,12 @@ import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * Activity to add an RSS channel to the user's list of channels.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class ChannelAddActivity extends Activity {
 	private static final String TAG = "ChannelAdd";
 	
@@ -46,6 +52,9 @@ public class ChannelAddActivity extends Activity {
 	protected ProgressDialog mBusy;
 	final Handler mHandler = new Handler();
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,6 +73,9 @@ public class ChannelAddActivity extends Activity {
 		});
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK)
@@ -71,11 +83,20 @@ public class ChannelAddActivity extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onStart() {
 		super.onStart();
 	}
 	
+	/**
+	 * Gets the favicon.ico from the target website.
+	 *
+	 * @param url of the RSS channel's website
+	 * @return URL of favicon.ico, or null if none exists
+	 */
 	private static URL getDefaultFavicon(String url) {
 		try {
 			URL orig = new URL(url);
@@ -87,6 +108,9 @@ public class ChannelAddActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Adds an RSS channel to the database.
+	 */
 	private void addChannel() {
 		
 		final String url = mUrl.getText().toString();
