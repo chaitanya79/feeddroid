@@ -35,17 +35,29 @@ import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.activity.HomeScreenActivity;
 import com.determinato.feeddroid.activity.PostViewActivity;
 
+/**
+ * Provider for home screen widget.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class FeedDroidWidget extends AppWidgetProvider {
 	private static final String TAG = "FeedDroidWidget";
 	
+	/** Constant for broadcast receiver */
 	public static final String FORCE_WIDGET_UPDATE =
 		"com.determinato.feeddroid.FORCE_WIDGET_UPDATE";
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onUpdate(Context ctx, AppWidgetManager manager, int[] ids) {
 		updateWidget(ctx, manager, ids);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onReceive(Context ctx, Intent intent) {
 		super.onReceive(ctx, intent);
@@ -58,7 +70,12 @@ public class FeedDroidWidget extends AppWidgetProvider {
 		}
 	}
 	
-	
+	/**
+	 * Queries the database for a random unread post and updates the widget UI.
+	 * @param ctx application context
+	 * @param manager AppWidgetManager
+	 * @param ids IDs of UI elements to update
+	 */
 	private void updateWidget(Context ctx, AppWidgetManager manager, int[] ids) {
 		Log.d(TAG, "updateWidget called");
 		ContentResolver resolver = ctx.getContentResolver();

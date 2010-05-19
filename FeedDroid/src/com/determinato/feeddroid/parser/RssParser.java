@@ -51,6 +51,13 @@ import android.util.Log;
 
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * Class to parse RSS feeds from the internet and store
+ * RSS channels and posts in the database.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class RssParser extends DefaultHandler {
 	private static final String TAG = "RssParser";
 	private static final int STATE_IN_ITEM = (1 << 2);
@@ -95,22 +102,49 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("media:content", STATE_MEDIA_CONTENT);
 	}
 	
+	/**
+	 * Constructor.
+	 * @param resolver ContentResolver to gain access to the database.
+	 */
 	public RssParser(ContentResolver resolver) {
 		super();
 		mResolver = resolver;
 	}
 	
+	/**
+	 * Persists RSS item to the database.
+	 * @param handler Handler to notify main application thread of parser events
+	 * @param id ID of channel
+	 * @param rssurl URL of channel
+	 * @return ID 
+	 * @throws Exception
+	 */
 	public long syncDb(Handler handler, long id, String rssurl) 
 		throws Exception {
 		mHandler = handler;
 		return syncDb(id, rssurl);
 	}
 	
+	/**
+	 * Persists RSS item to the database.
+	 * @param id
+	 * @param rssurl RSS feed URL.
+	 * @return ID
+	 * @throws Exception
+	 */
 	public long syncDb(long id, String rssurl) throws Exception {
 		long folderId = 1;
 		return syncDb(id, folderId, rssurl);
 	}
 	
+	/**
+	 * Persists RSS item to the database.
+	 * @param id item ID
+	 * @param folderId ID of containing folder
+	 * @param rssurl URL of RSS feed
+	 * @return long containing ID of inserted item
+	 * @throws Exception
+	 */
 	public long syncDb(long id, long folderId, String rssurl) 
 		throws Exception {
 		mId = id;
@@ -141,11 +175,24 @@ public class RssParser extends DefaultHandler {
 		return mId;
 	}
 	
+	/**
+	 * Returns indication of updated RSS feed icon.
+	 * @param id ID of channel
+	 * @param iconUrl RSS channel icon URL
+	 * @return true if updated, false otherwise
+	 * @throws MalformedURLException
+	 */
 	public boolean updateFavicon(long id, String iconUrl) 
 		throws MalformedURLException {
 		return updateFavicon(id, new URL(iconUrl));
 	}
 	
+	/**
+	 * Returns indication of updated RSS feed icon.
+	 * @param id ID of channel
+	 * @param iconUrl RSS channel icon URL
+	 * @return true if updated, false otherwise
+	 */
 	public boolean updateFavicon(long id, URL iconUrl) {
 		InputStream in = null;
 		OutputStream out = null;
@@ -185,6 +232,9 @@ public class RssParser extends DefaultHandler {
 		return r;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void startElement(String uri, String name, String qName, Attributes attrs) {
 		
 		if (mId == -1 &&
@@ -210,6 +260,9 @@ public class RssParser extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void endElement(String uri, String name, String qName) {
 		Integer state = mStateMap.get(name);
 		
@@ -240,6 +293,9 @@ public class RssParser extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void characters(char[] ch, int start, int length) {
 		// Are we in the Channel or in a Post?
 		if ((mId == -1) && (mState & STATE_IN_TITLE) != 0) {
@@ -291,6 +347,12 @@ public class RssParser extends DefaultHandler {
 		}
 	}
 	
+	/**
+	 * Examines string and replaces XML-escaped HTML entities with
+	 * their appropriate equivalents.
+	 * @param str String to examine
+	 * @return String with proper HTML elements
+	 */
 	private String reEncodeHtml(String str) {
 		StringBuilder builder = new StringBuilder();
 		String[] sources = new String[] {"&gt;", "&lt;", "&amp;"};
@@ -299,6 +361,10 @@ public class RssParser extends DefaultHandler {
 		return builder.toString();
 	}
 	
+	/**
+	 * Container for RSS posts
+	 *
+	 */
 	private class ChannelPost {
 		public String title;
 		public Date date;
@@ -332,12 +398,18 @@ public class RssParser extends DefaultHandler {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void endDocument() throws SAXException {
 		Log.d(TAG, "Parsing of " + mRssUrl + " finished.");
 		super.endDocument();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void startDocument() throws SAXException {
 		Log.d(TAG, "Parsing RSS XML: " + mRssUrl);

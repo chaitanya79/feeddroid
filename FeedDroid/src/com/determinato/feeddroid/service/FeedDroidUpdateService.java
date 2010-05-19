@@ -36,6 +36,11 @@ import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.provider.FeedDroidWidget;
 
+/**
+ * Service to update RSS feeds in the background.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class FeedDroidUpdateService extends Service {
 	private static final String TAG = "FeedDroidUpdateService";
 	private static final String ALARM_ACTION = "com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM";
@@ -47,11 +52,17 @@ public class FeedDroidUpdateService extends Service {
 	private ServiceBinder mBinder = new ServiceBinder();
 	private Cursor c;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate() {
 		mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
@@ -64,6 +75,9 @@ public class FeedDroidUpdateService extends Service {
 	}
 	
 	// Pre-2.0
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStart(Intent intent, int startId) {
 		
@@ -77,6 +91,11 @@ public class FeedDroidUpdateService extends Service {
 	}
 
 
+	/**
+	 * Starts the service.
+	 * @param intent
+	 * @param startId
+	 */
 	void doStart(Intent intent, int startId) {
 		Log.d(TAG, "Update serivce started");
 		c.requery();
@@ -100,6 +119,9 @@ public class FeedDroidUpdateService extends Service {
 		stopSelf();
 	}
 	
+	/**
+	 * Sends a notification of new RSS posts to the NotificationManager.
+	 */
 	private void sendNotification() {
 		mNotificationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		int icon = R.drawable.rss_status_bar;
@@ -120,6 +142,9 @@ public class FeedDroidUpdateService extends Service {
 		sendBroadcast(new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE));
 	}
 	
+	/**
+	 * Fetches and updates all RSS feeds.
+	 */
 	public void updateAllChannels() {
 		c.requery();
 		c.moveToFirst();
@@ -132,21 +157,40 @@ public class FeedDroidUpdateService extends Service {
 		c.close();
 	}
 	
+	/**
+	 * Update an RSS feed.
+	 * @param id ID of feed to update
+	 * @param url URL of feed XML
+	 */
 	public void updateChannel(long id, String url) {
 		parseChannelRss(id, url);
 	}
 	
+	/**
+	 * Service binder class
+	 */
 	public class ServiceBinder extends Binder {
 		public FeedDroidUpdateService getService() {
 			return FeedDroidUpdateService.this;
 		}
 	}
 
+	/**
+	 * Starts background thread to parse RSS XML.
+	 * @param id channel ID
+	 * @param url channel RSS URL
+	 */
 	private void parseChannelRss(long id, String url) {
 		Thread t = new Thread(null, doParse(id, url), "Parse RSS"); 
 		t.start();
 	}
 
+	/**
+	 * Runnable thread which performs the actual parsing work.
+	 * @param id
+	 * @param url
+	 * @return
+	 */
 	private Runnable doParse(final long id, final String url) {
 		Runnable parseRssThread = new Runnable() {
 			public void run() {

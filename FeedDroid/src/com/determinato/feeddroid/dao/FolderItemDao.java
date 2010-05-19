@@ -15,7 +15,21 @@
  */
 package com.determinato.feeddroid.dao;
 
+/**
+ * Interface to represent an RSS entity (either a folder or channel).
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public interface FolderItemDao {
+	/** 
+	 * Returns ID.
+	 * @return long containing ID
+	 */
 	long getId();
+	
+	/**
+	 * Returns title.
+	 * @return String containing title
+	 */
 	String getTitle();
 }

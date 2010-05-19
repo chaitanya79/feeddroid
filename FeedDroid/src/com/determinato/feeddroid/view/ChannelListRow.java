@@ -32,6 +32,11 @@ import android.widget.TextView;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * View containing details of an RSS feed.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class ChannelListRow extends RelativeLayout {
 	private static final String TAG = "ChannelListRow";
 	private ImageView mIcon;
@@ -39,6 +44,10 @@ public class ChannelListRow extends RelativeLayout {
 	private TextView mCount;
 	private ProgressBar mRefresh;
 	
+	/**
+	 * Constructor.
+	 * @param ctx parent view context
+	 */
 	public ChannelListRow(Context ctx) {
 		super(ctx);
 		
@@ -60,6 +69,10 @@ public class ChannelListRow extends RelativeLayout {
 		
 	}
 	
+	/**
+	 * Binds data to this view.
+	 * @param c database cursor
+	 */
 	public void bindView(Cursor c) {
 		ContentResolver content = getContext().getContentResolver();
 		
@@ -96,17 +109,28 @@ public class ChannelListRow extends RelativeLayout {
 		}
 	}
 	
+	/**
+	 * Show busy indicator.
+	 */
 	public void startRefresh() {
 		mCount.setVisibility(View.GONE);
 		mRefresh.setVisibility(View.VISIBLE);
 	}
 	
+	/**
+	 * Hide busy indicator and update view.
+	 * @param c database cursor
+	 */
 	public void finishRefresh(Cursor c) {
 		mRefresh.setVisibility(GONE);
 		bindView(c);
 		mCount.setVisibility(VISIBLE);
 	}
 	
+	/**
+	 * Update view.
+	 * @param channelId id of RSS feed
+	 */
 	public void finishRefresh(long channelId) {
 		Cursor c = getContext().getContentResolver().query
 		(ContentUris.withAppendedId(FeedDroid.Channels.CONTENT_URI, channelId),

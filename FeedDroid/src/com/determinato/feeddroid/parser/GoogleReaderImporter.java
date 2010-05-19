@@ -34,6 +34,16 @@ import android.util.Log;
 
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * Imports feeds contained in an file exported from Google Reader.
+ * 
+ * <p>Google Reader exports are stored in an XML file containing the
+ * OPML grammar.  This class is designed to recognize that grammar and
+ * parse folders and channels appropriately.
+ * 
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class GoogleReaderImporter implements FeedParser {
 	private static final String TAG = "GoogleReaderImporter";
 	
@@ -43,10 +53,17 @@ public class GoogleReaderImporter implements FeedParser {
 	private long parentFolder = ROOT_FOLDER;
 	private long previousParent = ROOT_FOLDER;
 	
+	/**
+	 * Constructor.
+	 * @param resolver ContentResolver to gain access to the application's SQLite database
+	 */
 	public GoogleReaderImporter(ContentResolver resolver) {
 		mResolver = resolver;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void importFeed(File file) throws Exception {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -60,6 +77,10 @@ public class GoogleReaderImporter implements FeedParser {
 		
 	}
 
+	/**
+	 * Processes a folder and all its child nodes.
+	 * @param node Current DOM node
+	 */
 	private void processFolder(Node node) {
 		NamedNodeMap atts = node.getAttributes();
 		ContentValues values = new ContentValues();
@@ -78,6 +99,10 @@ public class GoogleReaderImporter implements FeedParser {
 		parentFolder = previousParent;
 	}
 	
+	/**
+	 * Processes a node's child nodes.
+	 * @param children NodeList containing current DOM node's child nodes
+	 */
 	private void processChildren(NodeList children) {
 		
 		for (int i = 0; i < children.getLength(); i++) {

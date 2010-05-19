@@ -31,6 +31,11 @@ import android.widget.TextView;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.provider.FeedDroid;
 
+/**
+ * View class to display channel name
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class ChannelHeader extends LinearLayout {
 	private static final int paddingTop = 2;
 	private static final int paddingBottom = 6;
@@ -44,17 +49,29 @@ public class ChannelHeader extends LinearLayout {
 	private Paint mBlack1;
 	private Paint mBlack2;
 	
+	/**
+	 * Constructor.
+	 * @param ctx parent view context
+	 */
 	public ChannelHeader(Context ctx) {
 		super(ctx);
 		init(ctx);
 	}
 	
-	
+	/**
+	 * Constructor.
+	 * @param ctx parent view context
+	 * @param attrs attributes
+	 */
 	public ChannelHeader(Context ctx, AttributeSet attrs) {
 		super(ctx, attrs);
 		init(ctx);
 	}
 	
+	/**
+	 * Initializes the view.
+	 * @param ctx parent view context
+	 */
 	private void init(Context ctx) {
 		mRect = new Rect();
 		mGray = new Paint();
@@ -70,6 +87,9 @@ public class ChannelHeader extends LinearLayout {
 		mBlack2.setColor(0x33000000);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		Rect r = mRect;
@@ -83,6 +103,12 @@ public class ChannelHeader extends LinearLayout {
 		super.dispatchDraw(canvas);
 	}
 	
+	/**
+	 * Sets the view's logo.
+	 * @param channelName
+	 * @param iconData
+	 * @param logoData
+	 */
 	public void setLogo(String channelName, String iconData, String logoData) {
 		if (mIcon == null) {
 			mIcon = new ImageView(getContext());
@@ -106,6 +132,10 @@ public class ChannelHeader extends LinearLayout {
 		mLogoText.setText(channelName);
 	}
 	
+	/**
+	 * Sets the view's logo.
+	 * @param c Cursor from database containing channel data.
+	 */
 	public void setLogo(Cursor c) {
 		setLogo(c.getString(c.getColumnIndex(FeedDroid.Channels.TITLE)),
 				c.getString(c.getColumnIndex(FeedDroid.Channels.ICON)),

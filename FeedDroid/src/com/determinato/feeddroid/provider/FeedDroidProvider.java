@@ -43,10 +43,20 @@ import android.util.Log;
 
 import com.determinato.feeddroid.R;
 
+/**
+ * Content provider to provide database access.
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class FeedDroidProvider extends ContentProvider {
 	private static final String TAG = "FeedDroidProvider";
 	private static final String DB_NAME = "feeddroid.db";
+
+	
+	// ======== IMPORTANT ========================================
+	// Increment this when table schema changes!
 	private static final int DB_VERSION = 7;
+	// ======== IMPORTANT =========================================
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
 	private static HashMap<String, String> POST_LIST_PROJECTION;
@@ -67,11 +77,24 @@ public class FeedDroidProvider extends ContentProvider {
 	
 	private SQLiteDatabase mDb;
 	
+	/**
+	 * Helper class to create/update database.
+	 * @author john.hicks
+	 *
+	 */
 	private static class DbHelper extends SQLiteOpenHelper {
+		/**
+		 * Constructor.
+		 * @param ctx application context
+		 */
 		DbHelper(Context ctx) {
 			super(ctx, DB_NAME, null, DB_VERSION);
 		}
 		
+		/**
+		 * Creates Channels table.
+		 * @param db database
+		 */
 		protected void onCreateChannels(SQLiteDatabase db) {
 			String query = "CREATE TABLE channels (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"title TEXT UNIQUE, url TEXT UNIQUE, " +
@@ -80,6 +103,10 @@ public class FeedDroidProvider extends ContentProvider {
 			db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");			
 		}
 		
+		/**
+		 * Creates Posts table.
+		 * @param db database
+		 */
 		protected void onCreatePosts(SQLiteDatabase db) {
 			String query = "CREATE TABLE posts (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"channel_id INTEGER, title TEXT UNIQUE, url TEXT UNIQUE, " +
@@ -92,6 +119,10 @@ public class FeedDroidProvider extends ContentProvider {
 			db.execSQL("CREATE INDEX idx_channel ON posts (channel_id);");
 		}
 		
+		/**
+		 * Create Folders table.
+		 * @param db database
+		 */
 		protected void onCreateFolders(SQLiteDatabase db) {
 			String query = "CREATE TABLE folders (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"name TEXT NOT NULL, parent_id INTEGER DEFAULT '0');";
@@ -99,6 +130,9 @@ public class FeedDroidProvider extends ContentProvider {
 			db.execSQL("insert into folders(name) values('HOME');");
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			onCreateChannels(db);
@@ -106,10 +140,15 @@ public class FeedDroidProvider extends ContentProvider {
 			onCreateFolders(db);
 		}
 		
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + "...");
 			
+			// IMPORTANT: This switch provides a way to migrate from one version
+			// of the schema to another.  Make sure the numbers match the current schema version!
 			switch(oldVersion) {
 			case 6:
 				db.execSQL("insert into folders(name) values('HOME');");
@@ -147,6 +186,9 @@ public class FeedDroidProvider extends ContentProvider {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int count;
@@ -188,6 +230,9 @@ public class FeedDroidProvider extends ContentProvider {
 		return count;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getType(Uri uri) {
 		
@@ -214,14 +259,30 @@ public class FeedDroidProvider extends ContentProvider {
 		}
 	}
 	
+	/**
+	 * Returns icon filename.
+	 * @param channelId ID of the channel to retreive the icon for.
+	 * @return String containing filename
+	 */
 	private String getIconFilename(long channelId) {
 		return "channel" + channelId + ".ico";
 	}
 	
+	/**
+	 * Returns icon path
+	 * @param channelId
+	 * @return
+	 */
 	private String getIconPath(long channelId) {
 		return getContext().getFileStreamPath(getIconFilename(channelId)).getAbsolutePath();
 	}
 	
+	/**
+	 * Copys default RSS icon
+	 * @param path
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	private void copyDefaultIcon(String path) 
 		throws FileNotFoundException, IOException{
 		FileOutputStream out = new FileOutputStream(path);
@@ -277,6 +338,11 @@ public class FeedDroidProvider extends ContentProvider {
 		}
 	}
 	
+	/**
+	 * Inserts channel into the database.
+	 * @param values ContentValues containing channel details
+	 * @return ID of new channel
+	 */
 	private long insertChannels(ContentValues values) {
 		Resources r = Resources.getSystem();
 		
@@ -321,6 +387,11 @@ public class FeedDroidProvider extends ContentProvider {
 		return id;
 	}
 	
+	/**
+	 * Inserts post into the database.
+	 * @param values ContentValues containing post details
+	 * @return ID of new post
+	 */
 	private long insertPosts(ContentValues values) {
 		long id = -1;
 		try {
@@ -332,6 +403,10 @@ public class FeedDroidProvider extends ContentProvider {
 		return id;
 	}
 	
+	/**
+	 * Checks the database to ensure a URL doesn't already exist.
+	 * @return true if exists, false otherwise
+	 */
 	private boolean checkForDuplicatePost(String url) {
 		boolean dup = false;
 		String[] projection = {FeedDroid.Posts._ID};
@@ -343,6 +418,11 @@ public class FeedDroidProvider extends ContentProvider {
 		return dup;
 	}
 	
+	/**
+	 * Inserts folder into database
+	 * @param values ContentValues containing folder data
+	 * @return ID of new folder
+	 */
 	private long insertFolders(ContentValues values) {
 		long id = -1;
 		try {
@@ -354,6 +434,12 @@ public class FeedDroidProvider extends ContentProvider {
 		return id;
 	}
 	
+	/**
+	 * Checks database for duplicate folder
+	 * @param folderName name of folder
+	 * @param parentFolder ID of parent folder
+	 * @return true if exists, false otherwise
+	 */
 	private boolean checkForDuplicateFolder(String folderName, long parentFolder) {
 		boolean dup = false;
 		String[] projection = {FeedDroid.Folders._ID};
@@ -367,6 +453,9 @@ public class FeedDroidProvider extends ContentProvider {
 		return dup;
 	}
 	
+	/**
+	 * @{inheritDoc}
+	 */
 	@Override
 	public Uri insert(Uri url, ContentValues initialValues) {
 		long rowId;
@@ -403,6 +492,9 @@ public class FeedDroidProvider extends ContentProvider {
 		return uri;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onCreate() {
 		DbHelper helper = new DbHelper(getContext());
@@ -415,6 +507,9 @@ public class FeedDroidProvider extends ContentProvider {
 		return (mDb == null) ? false : true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
@@ -489,6 +584,9 @@ public class FeedDroidProvider extends ContentProvider {
 		return c;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {

@@ -23,5 +23,10 @@ import java.io.File;
  * 
  */
 public interface FeedParser {
+	/**
+	 * Imports feed from external file.
+	 * @param file File object
+	 * @throws Exception
+	 */
 	void importFeed(File file) throws Exception;
 }

@@ -18,6 +18,11 @@ package com.determinato.feeddroid.util;
 
 import android.view.KeyEvent;
 
+/**
+ * Keypad utility class
+ * @author John R. Hicks <john@determinato.com>
+ *
+ */
 public class KeyUtils {
 	private KeyUtils() {}
 	
