@@ -43,7 +43,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.parser.FeedParser;
 import com.determinato.feeddroid.parser.GoogleReaderImporter;
-import com.determinato.feeddroid.parser.OPMLParser;
 import com.determinato.feeddroid.provider.FeedDroid;
 
 /**
