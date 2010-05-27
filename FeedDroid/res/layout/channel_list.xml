@@ -35,12 +35,9 @@
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:padding="24dip"/>	
 		
-	<com.admob.android.ads.AdView
-		android:id="@+id/channel_list_ad"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		feeddroid:backgroundColor="#000000"
-		feeddroid:primaryTextColor="#FFFFFF"
-		feeddroid:secondaryTextColor="#CCCCCC"/>
+	<com.google.ads.GoogleAdView
+		android:id="@+id/adview"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
 			
 </LinearLayout>

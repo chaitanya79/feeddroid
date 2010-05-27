@@ -26,14 +26,10 @@
   		android:layout_height="wrap_content"/>
 
 
-	<com.admob.android.ads.AdView
-		android:id="@+id/post_list_ad"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_gravity="bottom"
-		feeddroid:backgroundColor="#000000"
-		feeddroid:primaryTextColor="#FFFFFF"
-		feeddroid:secondaryTextColor="#CCCCCC"/>  		
+	<com.google.ads.GoogleAdView
+		android:id="@+id/adview"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
   		
   		
   	<ScrollView

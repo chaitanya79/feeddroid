@@ -36,9 +36,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.determinato.feeddroid.R;
+import com.determinato.feeddroid.ads.FeedDroidAdConstants;
+import com.determinato.feeddroid.ads.FeedDroidAdSenseSpec;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.util.KeyUtils;
 import com.determinato.feeddroid.view.ChannelHeader;
+import com.google.ads.AdSenseSpec;
+import com.google.ads.GoogleAdView;
+import com.google.ads.AdSenseSpec.AdType;
+import com.google.ads.AdSenseSpec.ExpandDirection;
 
 /**
  * Activity to view a RSS post.
@@ -111,6 +117,17 @@ public class PostViewActivity extends Activity {
 		mPostId = Long.parseLong(uri.getPathSegments().get(1));
 		initWithData();
 		
+        // Set up ads
+	      AdSenseSpec spec = new FeedDroidAdSenseSpec(FeedDroidAdConstants.CLIENT_ID)
+	        	.setCompanyName(FeedDroidAdConstants.COMPANY_NAME)
+	        	.setAppName(getString(R.string.app_name))
+	        	.setChannel(FeedDroidAdConstants.CHANNEL_ID)
+	        	.setAdType(AdType.TEXT_IMAGE)
+	        	.setExpandDirection(ExpandDirection.TOP)
+	        	.setAdTestEnabled(true);
+	      
+	      	GoogleAdView adView = (GoogleAdView) findViewById(R.id.adview);
+	      	adView.showAds(spec);		
 	}
 	
 	/**

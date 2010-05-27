@@ -27,11 +27,17 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.adapters.FolderListCursorAdapter;
+import com.determinato.feeddroid.ads.FeedDroidAdConstants;
+import com.determinato.feeddroid.ads.FeedDroidAdSenseSpec;
 import com.determinato.feeddroid.dao.ChannelDao;
 import com.determinato.feeddroid.dao.FolderDao;
 import com.determinato.feeddroid.dao.FolderItemDao;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.view.FolderListRow;
+import com.google.ads.AdSenseSpec;
+import com.google.ads.GoogleAdView;
+import com.google.ads.AdSenseSpec.AdType;
+import com.google.ads.AdSenseSpec.ExpandDirection;
 
 /**
  * List of folders and RSS channels for a given folder ID.
@@ -87,6 +93,17 @@ public class FolderListActivity extends ListActivity {
 			new FolderListCursorAdapter(this, mFolderCursor, mChannelCursor);
 		setListAdapter(adapter);
 		
+        // Set up ads
+	      AdSenseSpec spec = new FeedDroidAdSenseSpec(FeedDroidAdConstants.CLIENT_ID)
+	        	.setCompanyName(FeedDroidAdConstants.COMPANY_NAME)
+	        	.setAppName(getString(R.string.app_name))
+	        	.setChannel(FeedDroidAdConstants.CHANNEL_ID)
+	        	.setAdType(AdType.TEXT_IMAGE)
+	        	.setExpandDirection(ExpandDirection.TOP)
+	        	.setAdTestEnabled(true);
+	      
+	      	GoogleAdView adView = (GoogleAdView) findViewById(R.id.adview);
+	      	adView.showAds(spec);		
 	}
 	
 	/**

@@ -46,7 +46,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -55,13 +54,18 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.adapters.FolderListCursorAdapter;
+import com.determinato.feeddroid.ads.FeedDroidAdConstants;
+import com.determinato.feeddroid.ads.FeedDroidAdSenseSpec;
 import com.determinato.feeddroid.dao.ChannelDao;
 import com.determinato.feeddroid.dao.FolderDao;
 import com.determinato.feeddroid.dao.FolderItemDao;
 import com.determinato.feeddroid.provider.FeedDroid;
-import com.determinato.feeddroid.provider.FeedDroidWidget;
 import com.determinato.feeddroid.service.FeedDroidUpdateService;
 import com.determinato.feeddroid.view.FolderListRow;
+import com.google.ads.AdSenseSpec;
+import com.google.ads.GoogleAdView;
+import com.google.ads.AdSenseSpec.AdType;
+import com.google.ads.AdSenseSpec.ExpandDirection;
 
 /**
  * Main application activity.
@@ -158,7 +162,17 @@ public class HomeScreenActivity extends ListActivity {
         }
         
         
-
+        // Set up ads
+      AdSenseSpec spec = new FeedDroidAdSenseSpec(FeedDroidAdConstants.CLIENT_ID)
+        	.setCompanyName(FeedDroidAdConstants.COMPANY_NAME)
+        	.setAppName(getString(R.string.app_name))
+        	.setChannel(FeedDroidAdConstants.CHANNEL_ID)
+        	.setAdType(AdType.TEXT_IMAGE)
+        	.setExpandDirection(ExpandDirection.TOP)
+        	.setAdTestEnabled(true);
+      
+      	GoogleAdView adView = (GoogleAdView) findViewById(R.id.adview);
+      	adView.showAds(spec);
 	}
 
 	/**
