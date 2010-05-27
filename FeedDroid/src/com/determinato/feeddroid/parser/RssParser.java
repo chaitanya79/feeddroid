@@ -280,6 +280,9 @@ public class RssParser extends DefaultHandler {
 				values.put(FeedDroid.Posts.CHANNEL_ID, mId);
 				values.put(FeedDroid.Posts.TITLE, mPostBuf.title);
 				values.put(FeedDroid.Posts.URL, mPostBuf.link);
+				
+				if (mPostBuf.author == null)
+					mPostBuf.author = "";
 				values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
 				values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
 				values.put(FeedDroid.Posts.BODY, reEncodeHtml(mPostBuf.desc));
