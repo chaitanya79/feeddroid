@@ -18,6 +18,7 @@
     <string name="hello">Hello World, ChannelListActivity!</string>
     <string name="app_name">FeedDroid</string>
     <string name="no_posts">No posts to display.</string>
+    <string name="no_results">No results.</string>
     <string name="feed_url">Feed URL:</string>
     <string name="feed_name">Feed name:</string>
     <string name="new_folder">New Folder</string>

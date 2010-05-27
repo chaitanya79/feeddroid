@@ -29,4 +29,9 @@
   		android:layout_width="fill_parent"
   		android:layout_height="fill_parent"
   		android:drawSelectorOnTop="true"/>
+  		
+  	<TextView android:id="@android:id/empty"
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content"
+  		android:text="@string/no_results"/>
 </LinearLayout>
