@@ -168,8 +168,7 @@ public class HomeScreenActivity extends ListActivity {
         	.setAppName(getString(R.string.app_name))
         	.setChannel(FeedDroidAdConstants.CHANNEL_ID)
         	.setAdType(AdType.TEXT_IMAGE)
-        	.setExpandDirection(ExpandDirection.TOP)
-        	.setAdTestEnabled(true);
+        	.setExpandDirection(ExpandDirection.TOP);
       
       	GoogleAdView adView = (GoogleAdView) findViewById(R.id.adview);
       	adView.showAds(spec);
