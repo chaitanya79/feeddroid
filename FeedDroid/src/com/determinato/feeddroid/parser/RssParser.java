@@ -169,7 +169,7 @@ public class RssParser extends DefaultHandler {
 			reader.parse(new InputSource(bufReader));
 		} catch (NullPointerException e) {
 			Log.e(TAG, Log.getStackTraceString(e));
-			Log.e(TAG, "Failed to load URL");
+			Log.e(TAG, "Failed to load URL" + url.toString());
 		}
 		
 		return mId;
@@ -280,9 +280,6 @@ public class RssParser extends DefaultHandler {
 				values.put(FeedDroid.Posts.CHANNEL_ID, mId);
 				values.put(FeedDroid.Posts.TITLE, mPostBuf.title);
 				values.put(FeedDroid.Posts.URL, mPostBuf.link);
-				
-				if (mPostBuf.author == null)
-					mPostBuf.author = "";
 				values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
 				values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
 				values.put(FeedDroid.Posts.BODY, reEncodeHtml(mPostBuf.desc));
@@ -345,6 +342,8 @@ public class RssParser extends DefaultHandler {
 			break;
 		case STATE_IN_ITEM | STATE_IN_ITEM_AUTHOR:
 			mPostBuf.author = new String(ch, start, length).trim();
+			if (mPostBuf.author == null)
+				mPostBuf.author = "";
 			break;
 		default:
 		}
@@ -358,8 +357,10 @@ public class RssParser extends DefaultHandler {
 	 */
 	private String reEncodeHtml(String str) {
 		StringBuilder builder = new StringBuilder();
-		String[] sources = new String[] {"&gt;", "&lt;", "&amp;"};
-		String[] dests = new String[] {">", "<", "&"};
+		if (str == null)
+			return "";
+		String[] sources = new String[] {"<![CDATA[", "]]>", "&gt;", "&lt;", "&amp;", "&#8217;", "&#8220;", "&#8221;"};
+		String[] dests = new String[] {"", "", ">", "<", "&", "'", "\"", "\""};
 		builder.append(TextUtils.replace(str, sources, dests));
 		return builder.toString();
 	}

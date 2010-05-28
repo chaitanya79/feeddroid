@@ -398,6 +398,7 @@ public class FeedDroidProvider extends ContentProvider {
 			if (!checkForDuplicatePost(values.getAsString("url")))
 				mDb.insert("posts", "title", values);
 		} catch (SQLiteConstraintException e) {
+			Log.d(TAG, "Cannot insert post: " + values.getAsString("url"));
 			// Eating this exception
 		}
 		return id;
@@ -487,8 +488,7 @@ public class FeedDroidProvider extends ContentProvider {
 
 		if (rowId > 0) 
 			getContext().getContentResolver().notifyChange(uri, null);
-		else 
-			Log.e(TAG, "Ignoring duplicate folder " + values.getAsString(FeedDroid.Folders.NAME));
+		
 		return uri;
 	}
 
