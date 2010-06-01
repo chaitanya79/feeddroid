@@ -1,3 +1,17 @@
+1.0
+---
+dc71e3d - last minute cleanup before 1.0 launch
+a8a3f3a - Fixed problems parsing RSS with null strings, and working on performan
+16bbb06 - Removed 1.5 support.  Google Ads for Mobile recommends 1.6.
+74f6dc8 - Removed test ads.
+df4cc45 - Added Google Ads for Mobile to replace AdMob
+65e54b0 - Fixed null pointer in post author
+1116588 - Added no results message to search results, and voice icon to search d
+bf462b3 - Added license
+2c8a824 - Froyo Support
+411bca2 - Got rid of unneeded imports
+28bf93e - Javadoc comments
+
 1.0 RC 3
 --------
 0823bef - Fixed FC when starting up app for first time.
