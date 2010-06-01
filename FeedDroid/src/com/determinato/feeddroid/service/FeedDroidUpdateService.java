@@ -139,7 +139,7 @@ public class FeedDroidUpdateService extends Service {
 		
 		notification.setLatestEventInfo(getApplicationContext(), titleTxt, tickerTxt, pending);
 		mNotificationMgr.notify(1, notification);
-		//sendBroadcast(new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE));
+		
 	}
 	
 	/**
@@ -155,6 +155,7 @@ public class FeedDroidUpdateService extends Service {
 		} while(c.moveToNext());
 		
 		c.close();
+		sendBroadcast(new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE));
 	}
 	
 	/**
