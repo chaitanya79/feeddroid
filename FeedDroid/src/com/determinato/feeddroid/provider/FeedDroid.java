@@ -81,6 +81,8 @@ public class FeedDroid {
 		public static final String DATE = "posted_on";
 		/** Post starred column header */
 		public static final String STARRED = "starred";
+		/** Podcast mp3 URL */
+		public static final String PODCAST_URL = "podcast_url";
 	}
 	
 	/** Folder URI and column header definitions */

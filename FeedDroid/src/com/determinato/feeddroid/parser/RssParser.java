@@ -100,6 +100,7 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("author", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("name", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("media:content", STATE_MEDIA_CONTENT);
+		mStateMap.put("enclosure", STATE_MEDIA_CONTENT); 
 	}
 	
 	/**
@@ -283,7 +284,9 @@ public class RssParser extends DefaultHandler {
 				values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
 				values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
 				values.put(FeedDroid.Posts.BODY, reEncodeHtml(mPostBuf.desc));
-					
+				if (mPostBuf.podcastUrl != null)
+					values.put(FeedDroid.Posts.PODCAST_URL, mPostBuf.podcastUrl);
+				
 				try {
 					mResolver.insert(FeedDroid.Posts.CONTENT_URI, values);
 				} catch (SQLException e) {
@@ -345,6 +348,13 @@ public class RssParser extends DefaultHandler {
 			if (mPostBuf.author == null)
 				mPostBuf.author = "";
 			break;
+		case STATE_IN_ITEM | STATE_MEDIA_CONTENT:
+			str.append(new String(ch, start, length).trim());
+			if (mPostBuf.podcastUrl == null)
+				mPostBuf.podcastUrl = str.toString();
+			else
+				mPostBuf.podcastUrl += str.toString();
+			break;
 		default:
 		}
 	}
@@ -375,6 +385,7 @@ public class RssParser extends DefaultHandler {
 		public String desc;
 		public String link;
 		public String author;
+		public String podcastUrl;
 		
 		public ChannelPost() {}
 		

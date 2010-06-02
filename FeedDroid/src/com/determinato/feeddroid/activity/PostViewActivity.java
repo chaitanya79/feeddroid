@@ -16,21 +16,28 @@
 
 package com.determinato.feeddroid.activity;
 
+import java.io.IOException;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,13 +68,13 @@ public class PostViewActivity extends Activity {
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Posts._ID, FeedDroid.Posts.CHANNEL_ID,
 		FeedDroid.Posts.TITLE, FeedDroid.Posts.BODY, FeedDroid.Posts.READ,
-		FeedDroid.Posts.URL, FeedDroid.Posts.STARRED	};
+		FeedDroid.Posts.URL, FeedDroid.Posts.STARRED, FeedDroid.Posts.PODCAST_URL};
 
 	private long mChannelId = -1;
 	private long mPostId = -1;
 	
 	private Cursor mCursor;
-	
+	private Context mContext;
 	private long mPrevPostId = -1;
 	private long mNextPostId = -1;
 	private TextView mTxtStarred;
@@ -83,6 +90,7 @@ public class PostViewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.post_view);
 		
+		mContext = this;
 		Uri uri = getIntent().getData();
 		String postId = uri.getPathSegments().get(1);
 		
@@ -206,6 +214,39 @@ public class PostViewActivity extends Activity {
 
 		
 		postText.loadData(html, "text/html", "utf-8");
+		
+		// Podcast support: If post contains a URL to a podcast, enable option to download
+		// the podcast mp3 and play it in the Media Player.
+		mCursor.requery();
+		mCursor.moveToFirst();
+		final String podcastUrl = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.PODCAST_URL));
+		Button listenBtn = (Button) findViewById(R.id.btnListen);
+		Button downloadBtn = (Button) findViewById(R.id.btnDownload);
+
+		if (!TextUtils.isEmpty(podcastUrl)) {
+			
+			listenBtn.setEnabled(true);
+			listenBtn.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					MediaPlayer player = new MediaPlayer();
+					try {
+						player.setDataSource(podcastUrl);
+						player.prepare();
+						player.start();
+					} catch (IOException e) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+						.setMessage(getString(R.string.podcast_file_error))
+						.setCancelable(true);
+					}
+				}
+			});
+		} else {
+			listenBtn.setVisibility(View.INVISIBLE);
+			downloadBtn.setVisibility(View.INVISIBLE);
+		}
+
 	}
 	
 	/**
@@ -218,6 +259,7 @@ public class PostViewActivity extends Activity {
 		
 		if (body == null) 
 			body = "";
+		
 		
 		if (!hasMoreLink(body, url))
 			body += "<p><a href=\"" + url + "\">Read more...</a></p>";

@@ -55,7 +55,7 @@ public class FeedDroidProvider extends ContentProvider {
 	
 	// ======== IMPORTANT ========================================
 	// Increment this when table schema changes!
-	private static final int DB_VERSION = 7;
+	private static final int DB_VERSION = 8;
 	// ======== IMPORTANT =========================================
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
@@ -111,7 +111,7 @@ public class FeedDroidProvider extends ContentProvider {
 			String query = "CREATE TABLE posts (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"channel_id INTEGER, title TEXT UNIQUE, url TEXT UNIQUE, " +
 				"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0', " +
-				"starred INTEGER(1) DEFAULT '0');";
+				"starred INTEGER(1) DEFAULT '0', podcast_url TEXT);";
 			db.execSQL(query);
 			
 			// Create indexes
@@ -146,35 +146,14 @@ public class FeedDroidProvider extends ContentProvider {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion + "...");
-			
+			String query = "";
 			// IMPORTANT: This switch provides a way to migrate from one version
 			// of the schema to another.  Make sure the numbers match the current schema version!
 			switch(oldVersion) {
-			case 6:
-				db.execSQL("insert into folders(name) values('HOME');");
-				db.execSQL("update channels set folder_id=1;");
-				break;
-			case 5:
-				db.beginTransaction();
-				try {
-					String query = "ALTER TABLE channels ADD folder_id INTEGER DEFAULT '0'";
-					db.execSQL(query);
-					db.execSQL("CREATE INDEX idx_folders ON channels (folder_id);");
-					query = "ALTER TABLE posts RENAME TO posts_temp";
-					db.execSQL(query);
-					query = "CREATE TABLE posts(_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
-						"channel_id INTEGER, title TEXT UNIQUE, url TEXT UNIQUE, " + 
-						"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0', " +
-						"starred INTEGER(1) DEFAULT '0');";
-					db.execSQL(query);
-					query = "INSERT INTO posts SELECT * FROM posts_temp;";
-					db.execSQL(query);
-					db.execSQL("DROP TABLE posts_temp");
-					onCreateFolders(db);
-					db.setTransactionSuccessful();
-				} finally {
-					db.endTransaction();
-				}
+				
+			case 7:
+				query = "ALTER TABLE posts ADD podcast_url TEXT";
+				db.execSQL(query);
 				break;
 			default:
 				Log.w(TAG, "Version too old, wiping out database contents...");
@@ -659,6 +638,7 @@ public class FeedDroidProvider extends ContentProvider {
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.DATE, "posted_on");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.BODY, "body");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.STARRED, "starred");
+		POST_LIST_PROJECTION.put(FeedDroid.Posts.PODCAST_URL, "podcast_url");
 		
 		FOLDER_LIST_PROJECTION = new HashMap<String, String>();
 		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders._ID, "_id");

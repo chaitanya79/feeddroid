@@ -35,6 +35,8 @@
     <string name="view_post">View Post</string>
     <string name="view_posts">View Posts</string>
     <string name="btn_save">Save</string>
+    <string name="btn_podcast_listen">Listen to Podcast</string>
+    <string name="btn_podcast_download">Download Podcast</string>
     <string name="confirm_remove_channel">Are you sure you want to remove this channel?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -62,7 +64,7 @@
     </string>
     <string name="empty_folder">Folder is empty.</string>
     <string name="move_choose_folder">Choose folder you wish to move this item to</string>
-    
+    <string name="podcast_file_error">Unable to play podcast file.</string>
     <string-array name="update_freq_options">
 		<item>Every Minute</item>
 		<item>Every 15 Minutes</item>
