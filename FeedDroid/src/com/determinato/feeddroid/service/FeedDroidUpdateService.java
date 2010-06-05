@@ -24,20 +24,17 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.Binder;
-import android.os.Debug;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.determinato.feeddroid.R;
 import com.determinato.feeddroid.activity.HomeScreenActivity;
 import com.determinato.feeddroid.activity.PreferencesActivity;
-import com.determinato.feeddroid.parser.RssParser;
 import com.determinato.feeddroid.provider.FeedDroid;
-import com.determinato.feeddroid.provider.FeedDroidWidget;
+import com.determinato.feeddroid.util.FeedDroidUtils;
 
 /**
- * Service to update RSS feeds in the background.
+ * Service called by a system Alarm to update RSS feeds in the background.
  * @author John R. Hicks <john@determinato.com>
  *
  */
@@ -46,18 +43,15 @@ public class FeedDroidUpdateService extends Service {
 	private static final String ALARM_ACTION = "com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM";
 	private NotificationManager mNotificationMgr;
 	private SharedPreferences mPreferences;
-	private boolean mHasUpdates;
 	private PendingIntent mPending;
 	private AlarmManager mAlarmManager;
-	private ServiceBinder mBinder = new ServiceBinder();
-	private Cursor c;
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IBinder onBind(Intent intent) {
-		return mBinder;
+		return null;
 	}
 	
 	/**
@@ -69,8 +63,6 @@ public class FeedDroidUpdateService extends Service {
 		Intent intent = new Intent(ALARM_ACTION);
 		mPending = PendingIntent.getBroadcast(this, 0, intent, 0);
 		mPreferences = getSharedPreferences(PreferencesActivity.USER_PREFERENCE, Activity.MODE_PRIVATE);
-		c = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
-				new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL}, null, null, null);
 		
 	}
 	
@@ -98,24 +90,34 @@ public class FeedDroidUpdateService extends Service {
 	 */
 	void doStart(Intent intent, int startId) {
 		Log.d(TAG, "Update serivce started");
-		c.requery();
-		if (c.getCount() == 0) {
-			c.close();
+		if (FeedDroidUtils.isUpdating())
 			return;
+		
+		FeedDroidUtils.setUpdating(true);
+		FeedDroidUtils.setNewUpdates(false);
+		String[] projection = new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL};
+		Cursor cCursor = getContentResolver().query(FeedDroid.Channels.CONTENT_URI, 
+				projection, null, null, null);
+
+		try {
+			cCursor.moveToFirst();
+		
+			do {
+				long id = cCursor.getLong(cCursor.getColumnIndex(FeedDroid.Channels._ID));
+				String url = cCursor.getString(cCursor.getColumnIndex(FeedDroid.Channels.URL));
+				Intent updateService = new Intent(this, RssParserService.class);
+				updateService.putExtra("id", id);
+				updateService.putExtra("url", url);
+				startService(updateService);
+			} while(cCursor.moveToNext());
+		} finally {
+			cCursor.close();
 		}
-		
-		c.moveToFirst();
-		
-		do {
-			long id = c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
-			String url = c.getString(c.getColumnIndex(FeedDroid.Channels.URL));
-			parseChannelRss(id, url);
-		} while(c.moveToNext());
-		c.close();
-		if (mHasUpdates) 
+			
+		if (FeedDroidUtils.hasUpdates()) 
 			sendNotification();
 
-		
+		FeedDroidUtils.setUpdating(false);
 		stopSelf();
 	}
 	
@@ -141,81 +143,6 @@ public class FeedDroidUpdateService extends Service {
 		mNotificationMgr.notify(1, notification);
 		
 	}
-	
-	/**
-	 * Fetches and updates all RSS feeds.
-	 */
-	public void updateAllChannels() {
-		c.requery();
-		c.moveToFirst();
-		do {
-			long id = c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
-			String url = c.getString(c.getColumnIndex(FeedDroid.Channels.URL));
-			parseChannelRss(id, url);
-		} while(c.moveToNext());
-		
-		c.close();
-		sendBroadcast(new Intent(FeedDroidWidget.FORCE_WIDGET_UPDATE));
-	}
-	
-	/**
-	 * Update an RSS feed.
-	 * @param id ID of feed to update
-	 * @param url URL of feed XML
-	 */
-	public void updateChannel(long id, String url) {
-		parseChannelRss(id, url);
-	}
-	
-	/**
-	 * Service binder class
-	 */
-	public class ServiceBinder extends Binder {
-		public FeedDroidUpdateService getService() {
-			return FeedDroidUpdateService.this;
-		}
-	}
 
-	/**
-	 * Starts background thread to parse RSS XML.
-	 * @param id channel ID
-	 * @param url channel RSS URL
-	 */
-	private void parseChannelRss(long id, String url) {
-		Thread t = new Thread(null, doParse(id, url), "Parse RSS"); 
-		t.start();
-	}
 
-	/**
-	 * Runnable thread which performs the actual parsing work.
-	 * @param id
-	 * @param url
-	 * @return
-	 */
-	private Runnable doParse(final long id, final String url) {
-		Runnable parseRssThread = new Runnable() {
-			public void run() {
-				Cursor p = getContentResolver().query(FeedDroid.Posts.CONTENT_URI, 
-						new String[] {FeedDroid.Posts._ID}, "channel_id=" + id, null, null);
-				int oldPostCount = p.getCount();
-
-				try {
-					new RssParser(getContentResolver()).syncDb(id, url);
-					if (p.requery()) {
-						int newPostCount = p.getCount();
-						if (newPostCount > oldPostCount) {
-							sendNotification();
-						}
-					}
-				} catch(Exception e) {
-					Log.e("RssUpdaterTask", Log.getStackTraceString(e));
-				} finally {
-					p.close();
-				}
-				
-			};
-		};
-		
-		return parseRssThread;
-	}
 }

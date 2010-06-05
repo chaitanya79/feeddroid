@@ -42,6 +42,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.determinato.feeddroid.R;
+import com.determinato.feeddroid.util.FeedDroidUtils;
 
 /**
  * Content provider to provide database access.
@@ -374,8 +375,10 @@ public class FeedDroidProvider extends ContentProvider {
 	private long insertPosts(ContentValues values) {
 		long id = -1;
 		try {
-			if (!checkForDuplicatePost(values.getAsString("url")))
+			if (!checkForDuplicatePost(values.getAsString("url"))) {
 				mDb.insert("posts", "title", values);
+				FeedDroidUtils.setNewUpdates(true);
+			}
 		} catch (SQLiteConstraintException e) {
 			Log.d(TAG, "Cannot insert post: " + values.getAsString("url"));
 			// Eating this exception

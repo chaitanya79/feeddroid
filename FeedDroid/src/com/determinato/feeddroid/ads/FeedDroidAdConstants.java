@@ -4,4 +4,7 @@ public class FeedDroidAdConstants {
 	public static final String CLIENT_ID = "ca-mb-app-pub-0951898974791398";
 	public static final String COMPANY_NAME = "determinato.com";
 	public static final String CHANNEL_ID = "default";
+	
+	// Set this to false before release!
+	public static final boolean AD_TEST_ENABLED = false;
 }

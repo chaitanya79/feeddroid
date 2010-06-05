@@ -22,20 +22,17 @@ import android.app.ListActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
@@ -61,6 +58,7 @@ import com.determinato.feeddroid.dao.FolderDao;
 import com.determinato.feeddroid.dao.FolderItemDao;
 import com.determinato.feeddroid.provider.FeedDroid;
 import com.determinato.feeddroid.service.FeedDroidUpdateService;
+import com.determinato.feeddroid.service.RssParserService;
 import com.determinato.feeddroid.view.FolderListRow;
 import com.google.ads.AdSenseSpec;
 import com.google.ads.GoogleAdView;
@@ -168,10 +166,13 @@ public class HomeScreenActivity extends ListActivity {
         	.setAppName(getString(R.string.app_name))
         	.setChannel(FeedDroidAdConstants.CHANNEL_ID)
         	.setAdType(AdType.TEXT_IMAGE)
-        	.setExpandDirection(ExpandDirection.TOP);
+        	.setExpandDirection(ExpandDirection.TOP)
+        	.setAdTestEnabled(FeedDroidAdConstants.AD_TEST_ENABLED);
       
       	GoogleAdView adView = (GoogleAdView) findViewById(R.id.adview);
+      	
       	adView.showAds(spec);
+      	
 	}
 
 	/**
@@ -183,9 +184,6 @@ public class HomeScreenActivity extends ListActivity {
 		mNotificationManager.cancel(1);
 		mFolderCursor.requery();
 		mChannelCursor.requery();
-		
-		Intent bindIntent = new Intent(this, FeedDroidUpdateService.class);
-		bindService(bindIntent, mConnection, Context.BIND_AUTO_CREATE);
 		
 		initAdapter();
 
@@ -487,27 +485,26 @@ public class HomeScreenActivity extends ListActivity {
 	 * and requests it to update all RSS feeds in the background.</p>
 	 */
 	private void updateAllChannels() {
-		mServiceBinder.updateAllChannels();
+		//mServiceBinder.updateAllChannels();
+		ContentResolver resolver = getContentResolver();
+		String[] projection = new String[] {FeedDroid.Channels._ID, FeedDroid.Channels.URL};
+		Cursor c = resolver.query(FeedDroid.Channels.CONTENT_URI, projection, null, null, null);
+		if (c.getCount() == 0)
+			return;
+		c.moveToFirst();
+		do {
+			long id = c.getLong(c.getColumnIndex(FeedDroid.Channels._ID));
+			String url = c.getString(c.getColumnIndex(FeedDroid.Channels.URL));
+			Intent service = new Intent(this, RssParserService.class);
+			service.putExtra("id", id);
+			service.putExtra("url", url);
+			startService(service);
+		} while (c.moveToNext());
+		c.close();
 	}
 	
-	private ServiceConnection mConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			mServiceBinder = ((FeedDroidUpdateService.ServiceBinder) service).getService();
-		}
-		
-		public void onServiceDisconnected(ComponentName className) {
-			mServiceBinder = null;
-		}
-	};
+	
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void onStop() {
-		unbindService(mConnection);
-		super.onStop();
-	}
 	
 	/**
 	 * Handler to remove splash screen and display main interface.

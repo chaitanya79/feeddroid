@@ -16,8 +16,8 @@
  -->
  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.determinato.feeddroid" 
-	android:versionName="1.0" 
-	android:versionCode="34">
+	android:versionName="1.0.1" 
+	android:versionCode="35">
 	android:installLocation="internalOnly">
 
 	<supports-screens android:smallScreens="false"
@@ -110,7 +110,8 @@
 		</activity>
 		
 		<service android:name=".service.FeedDroidUpdateService" />
-
+		<service android:name=".service.RssParserService" />
+		
 		<receiver android:name=".receivers.AlarmReceiver">
 			<intent-filter>
 				<action android:name="com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM"/>
