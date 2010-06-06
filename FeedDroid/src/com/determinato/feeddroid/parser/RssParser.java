@@ -40,9 +40,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Handler;
@@ -50,6 +48,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.determinato.feeddroid.provider.FeedDroid;
+import com.determinato.feeddroid.util.FeedDroidUtils;
 
 /**
  * Class to parse RSS feeds from the internet and store
@@ -68,6 +67,7 @@ public class RssParser extends DefaultHandler {
 	private static final int STATE_IN_ITEM_AUTHOR = (1 << 7);
 	private static final int STATE_IN_TITLE = (1 << 8);
 	private static final int STATE_MEDIA_CONTENT = (1 << 9);
+	private static final int STATE_IN_IMAGE = (1 << 10);
 	
 	private static HashMap<String, Integer> mStateMap;
 	
@@ -101,6 +101,7 @@ public class RssParser extends DefaultHandler {
 		mStateMap.put("name", STATE_IN_ITEM_AUTHOR);
 		mStateMap.put("media:content", STATE_MEDIA_CONTENT);
 		mStateMap.put("enclosure", STATE_MEDIA_CONTENT); 
+		mStateMap.put("image", STATE_IN_IMAGE);
 	}
 	
 	/**
@@ -257,9 +258,20 @@ public class RssParser extends DefaultHandler {
 			
 				if (href != null)
 					mPostBuf.link = href;
+			} else if ((mState & STATE_IN_ITEM) != 0 && state.intValue() == STATE_MEDIA_CONTENT) {
+				String url = attrs.getValue("url");
+				String type = attrs.getValue("type");
+				
+				
+				if (!TextUtils.isEmpty(url) && FeedDroidUtils.isPodcast(type)) {
+					Log.d(TAG, "Podcast: " + url);
+					mPostBuf.podcastUrl = url;
+					mPostBuf.podcastMimeType = type;
+				}
 			}
 		}
 	}
+	
 	
 	/**
 	 * {@inheritDoc}
@@ -284,8 +296,10 @@ public class RssParser extends DefaultHandler {
 				values.put(FeedDroid.Posts.AUTHOR, mPostBuf.author);
 				values.put(FeedDroid.Posts.DATE, mPostBuf.getDate());
 				values.put(FeedDroid.Posts.BODY, reEncodeHtml(mPostBuf.desc));
-				if (mPostBuf.podcastUrl != null)
+				if (!TextUtils.isEmpty(mPostBuf.podcastUrl)) {
 					values.put(FeedDroid.Posts.PODCAST_URL, mPostBuf.podcastUrl);
+					values.put(FeedDroid.Posts.PODCAST_MIME_TYPE, mPostBuf.podcastMimeType);
+				}
 				
 				try {
 					mResolver.insert(FeedDroid.Posts.CONTENT_URI, values);
@@ -348,13 +362,7 @@ public class RssParser extends DefaultHandler {
 			if (mPostBuf.author == null)
 				mPostBuf.author = "";
 			break;
-		case STATE_IN_ITEM | STATE_MEDIA_CONTENT:
-			str.append(new String(ch, start, length).trim());
-			if (mPostBuf.podcastUrl == null)
-				mPostBuf.podcastUrl = str.toString();
-			else
-				mPostBuf.podcastUrl += str.toString();
-			break;
+
 		default:
 		}
 	}
@@ -386,6 +394,7 @@ public class RssParser extends DefaultHandler {
 		public String link;
 		public String author;
 		public String podcastUrl;
+		public String podcastMimeType;
 		
 		public ChannelPost() {}
 		

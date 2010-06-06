@@ -56,7 +56,7 @@ public class FeedDroidProvider extends ContentProvider {
 	
 	// ======== IMPORTANT ========================================
 	// Increment this when table schema changes!
-	private static final int DB_VERSION = 8;
+	private static final int DB_VERSION = 9;
 	// ======== IMPORTANT =========================================
 	
 	private static HashMap<String, String> CHANNEL_LIST_PROJECTION;
@@ -112,7 +112,7 @@ public class FeedDroidProvider extends ContentProvider {
 			String query = "CREATE TABLE posts (_id INTEGER PRIMARY KEY AUTOINCREMENT ," +
 				"channel_id INTEGER, title TEXT UNIQUE, url TEXT UNIQUE, " +
 				"posted_on DATETIME, body TEXT, author TEXT, read INTEGER(1) DEFAULT '0', " +
-				"starred INTEGER(1) DEFAULT '0', podcast_url TEXT);";
+				"starred INTEGER(1) DEFAULT '0', podcast_url TEXT, podcast_mime_type TEXT);";
 			db.execSQL(query);
 			
 			// Create indexes
@@ -152,8 +152,8 @@ public class FeedDroidProvider extends ContentProvider {
 			// of the schema to another.  Make sure the numbers match the current schema version!
 			switch(oldVersion) {
 				
-			case 7:
-				query = "ALTER TABLE posts ADD podcast_url TEXT";
+			case 8:
+				query = "ALTER TABLE posts ADD podcast_mime_type TEXT";
 				db.execSQL(query);
 				break;
 			default:
@@ -642,6 +642,7 @@ public class FeedDroidProvider extends ContentProvider {
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.BODY, "body");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.STARRED, "starred");
 		POST_LIST_PROJECTION.put(FeedDroid.Posts.PODCAST_URL, "podcast_url");
+		POST_LIST_PROJECTION.put(FeedDroid.Posts.PODCAST_MIME_TYPE, "podcast_mime_type");
 		
 		FOLDER_LIST_PROJECTION = new HashMap<String, String>();
 		FOLDER_LIST_PROJECTION.put(FeedDroid.Folders._ID, "_id");

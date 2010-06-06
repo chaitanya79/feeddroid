@@ -107,7 +107,7 @@ public class HomeScreenActivity extends ListActivity {
 	private static final int SHOW_MOVE = 2;
 	private static final int STOP_SPLASH = 0;
 	
-	private static final long SPLASH_TIME = 5000;
+	private static final long SPLASH_TIME = 2000;
 	
 	private static boolean mSplashShown = false;
 	

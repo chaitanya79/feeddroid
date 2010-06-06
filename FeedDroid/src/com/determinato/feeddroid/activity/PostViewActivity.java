@@ -68,7 +68,7 @@ public class PostViewActivity extends Activity {
 	private static final String[] PROJECTION = new String[] {
 		FeedDroid.Posts._ID, FeedDroid.Posts.CHANNEL_ID,
 		FeedDroid.Posts.TITLE, FeedDroid.Posts.BODY, FeedDroid.Posts.READ,
-		FeedDroid.Posts.URL, FeedDroid.Posts.STARRED, FeedDroid.Posts.PODCAST_URL};
+		FeedDroid.Posts.URL, FeedDroid.Posts.STARRED, FeedDroid.Posts.PODCAST_URL, FeedDroid.Posts.PODCAST_MIME_TYPE};
 
 	private long mChannelId = -1;
 	private long mPostId = -1;
@@ -220,6 +220,9 @@ public class PostViewActivity extends Activity {
 		mCursor.requery();
 		mCursor.moveToFirst();
 		final String podcastUrl = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.PODCAST_URL));
+		final String podcastName = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.TITLE));
+		final String podcastMimeType = mCursor.getString(mCursor.getColumnIndex(FeedDroid.Posts.PODCAST_MIME_TYPE));
+		
 		Button listenBtn = (Button) findViewById(R.id.btnListen);
 		Button downloadBtn = (Button) findViewById(R.id.btnDownload);
 
@@ -230,16 +233,11 @@ public class PostViewActivity extends Activity {
 				
 				@Override
 				public void onClick(View v) {
-					MediaPlayer player = new MediaPlayer();
-					try {
-						player.setDataSource(podcastUrl);
-						player.prepare();
-						player.start();
-					} catch (IOException e) {
-						AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-						.setMessage(getString(R.string.podcast_file_error))
-						.setCancelable(true);
-					}
+					Intent player = new Intent(mContext, PodcastPlayerActivity.class);
+					player.putExtra("url", podcastUrl);
+					player.putExtra("name", podcastName);
+					player.putExtra("type", podcastMimeType);
+					startActivity(player);
 				}
 			});
 		} else {
