@@ -1,3 +1,9 @@
+1.1
+---
+1051bdf - podcast support
+b6c40f6 - 1.0.1 changelog
+26aaf2a - 1.0.1 changelog
+
 1.0.1 
 -----
 2bd8deb - Add RssParserService and erformance improvements to FeedDroidParserService
