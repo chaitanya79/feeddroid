@@ -1,3 +1,9 @@
+1.0.1
+-----
+2bd8deb - Add RssParserService and erformance improvements to FeedDroidParserService
+e0acbab - working on Podcast support
+e5f37b0 - fixed manifest
+
 1.0
 ---
 dc71e3d - last minute cleanup before 1.0 launch
