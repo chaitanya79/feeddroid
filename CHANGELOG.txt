@@ -1,4 +1,4 @@
-1.0.1
+1.0.1 
 -----
 2bd8deb - Add RssParserService and erformance improvements to FeedDroidParserService
 e0acbab - working on Podcast support
