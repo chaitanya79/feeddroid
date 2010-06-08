@@ -119,7 +119,8 @@
 				<action android:name="com.determinato.feeddroid.ACTION_REFRESH_RSS_ALARM"/>
 			</intent-filter>
 		</receiver>
-		
+
+<!-- 	
 		<receiver android:name=".provider.FeedDroidWidget"
 			android:label="FeedDroid Widget">
 			<intent-filter>
@@ -132,7 +133,7 @@
 				android:name="android.appwidget.provider"
 				android:resource="@xml/widget"/>
 		</receiver>
-			
+-->			
 		<meta-data android:value="a14bb63711d7749" android:name="ADMOB_PUBLISHER_ID"/>
 		<meta-data android:name="android.app.default_searchable"
 			android:value=".activity.SearchActivity"/>
