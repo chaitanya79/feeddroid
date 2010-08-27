@@ -131,7 +131,8 @@ public class PostViewActivity extends Activity {
 	        	.setAppName(getString(R.string.app_name))
 	        	.setChannel(FeedDroidAdConstants.CHANNEL_ID)
 	        	.setAdType(AdType.TEXT_IMAGE)
-	        	.setExpandDirection(ExpandDirection.TOP);
+	        	.setExpandDirection(ExpandDirection.TOP)
+	        	.setAdTestEnabled(FeedDroidAdConstants.AD_TEST_ENABLED);
 	      
 	      	GoogleAdView adView = (GoogleAdView) findViewById(R.id.adview);
 	      	adView.showAds(spec);		
